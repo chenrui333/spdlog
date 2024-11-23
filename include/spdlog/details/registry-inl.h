@@ -26,9 +26,26 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <mutex>
+
 
 namespace spdlog {
 namespace details {
+
+
+SPDLOG_INLINE static std::shared_ptr<registry> s_instance = std::make_shared<registry>();
+
+SPDLOG_INLINE registry &registry::instance() {
+    return *s_instance;
+}
+
+SPDLOG_INLINE std::shared_ptr<registry> registry::shared_instance() {
+    return s_instance;
+}
+
+SPDLOG_INLINE void registry::set_instance(std::shared_ptr<registry> instance) {
+    s_instance = instance;
+}
 
 SPDLOG_INLINE registry::registry()
     : formatter_(new pattern_formatter()) {
@@ -233,10 +250,6 @@ SPDLOG_INLINE void registry::set_levels(log_levels levels, level::level_enum *gl
     }
 }
 
-SPDLOG_INLINE registry &registry::instance() {
-    static registry s_instance;
-    return s_instance;
-}
 
 SPDLOG_INLINE void registry::apply_logger_env_levels(std::shared_ptr<logger> new_logger) {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
