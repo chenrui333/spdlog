@@ -15,6 +15,7 @@
 // destructing..
 
 #include <spdlog/logger.h>
+#include <spdlog/details/thread_pool.h>
 
 namespace spdlog {
 

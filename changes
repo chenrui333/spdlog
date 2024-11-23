@@ -4,8 +4,9 @@ Removed registry api
 Removed spdlog/cfg/* api
 (?) Renamed set/get_default_logger() to set/get_logger()
 Removed all factory functions. Use the logger constructor instead.
+Removed flush_every
 
 TODO
-
 Thread pool singleton and clean async.h
-flush_every removed() ?
+remove periodic worker files
+

@@ -6,8 +6,6 @@
 #endif
 
 #include <mutex>
-
-#include <spdlog/async.h>
 #include <spdlog/details/null_mutex.h>
 //
 // color sinks
