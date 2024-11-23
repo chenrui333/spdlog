@@ -35,7 +35,8 @@ TEST_CASE("daily_logger with dateonly calculator", "[daily_logger]") {
     spdlog::fmt_lib::format_to(std::back_inserter(w), SPDLOG_FILENAME_T("{}_{:04d}-{:02d}-{:02d}"),
                                basename, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday);
 
-    auto logger = spdlog::create<sink_type>("logger", basename, 0, 0);
+    auto sink = std::make_shared<sink_type>(basename, 0, 0);
+    auto logger = std::make_shared<spdlog::logger>("logger", std::move(sink));
     for (int i = 0; i < 10; ++i) {
         logger->info("Test message {}", i);
     }
@@ -67,13 +68,12 @@ TEST_CASE("daily_logger with custom calculator", "[daily_logger]") {
     spdlog::fmt_lib::format_to(std::back_inserter(w), SPDLOG_FILENAME_T("{}{:04d}{:02d}{:02d}"),
                                basename, tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday);
 
-    auto logger = spdlog::create<sink_type>("logger", basename, 0, 0);
+    auto sink = std::make_shared<sink_type>(basename, 0, 0);
+    spdlog::logger logger("logger", sink);
     for (int i = 0; i < 10; ++i) {
-        logger->info("Test message {}", i);
+        logger.info("Test message {}", i);
     }
-
-    logger->flush();
-
+    logger.flush();
     require_message_count(filename_buf_to_utf8string(w), 10);
 }
 

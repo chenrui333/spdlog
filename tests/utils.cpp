@@ -8,7 +8,6 @@
 #endif
 
 void prepare_logdir() {
-    spdlog::drop_all();
 #ifdef _WIN32
     system("rmdir /S /Q test_logs");
 #else

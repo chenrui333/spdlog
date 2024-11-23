@@ -1,6 +1,7 @@
 #include "includes.h"
 #include "test_sink.h"
 #include "spdlog/async.h"
+#include "spdlog/async_logger.h"
 
 TEST_CASE("bactrace1", "[bactrace]") {
     using spdlog::sinks::test_sink_st;
@@ -47,9 +48,8 @@ TEST_CASE("bactrace-async", "[bactrace]") {
 
     size_t backtrace_size = 5;
 
-    spdlog::init_thread_pool(120, 1);
-    auto logger = std::make_shared<spdlog::async_logger>("test-bactrace-async", test_sink,
-                                                         spdlog::thread_pool());
+    auto tp = std::make_shared<spdlog::details::thread_pool>(8192, 1U);
+    auto logger = std::make_shared<spdlog::async_logger>("test-bactrace-async", test_sink, tp);
     logger->set_pattern("%v");
     logger->enable_backtrace(backtrace_size);
 

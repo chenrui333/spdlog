@@ -83,25 +83,4 @@ SPDLOG_INLINE stderr_sink<Mutex>::stderr_sink()
     : stdout_sink_base<Mutex>(stderr) {}
 
 }  // namespace sinks
-
-// factory methods
-template <typename Factory>
-SPDLOG_INLINE std::shared_ptr<logger> stdout_logger_mt(const std::string &logger_name) {
-    return Factory::template create<sinks::stdout_sink_mt>(logger_name);
-}
-
-template <typename Factory>
-SPDLOG_INLINE std::shared_ptr<logger> stdout_logger_st(const std::string &logger_name) {
-    return Factory::template create<sinks::stdout_sink_st>(logger_name);
-}
-
-template <typename Factory>
-SPDLOG_INLINE std::shared_ptr<logger> stderr_logger_mt(const std::string &logger_name) {
-    return Factory::template create<sinks::stderr_sink_mt>(logger_name);
-}
-
-template <typename Factory>
-SPDLOG_INLINE std::shared_ptr<logger> stderr_logger_st(const std::string &logger_name) {
-    return Factory::template create<sinks::stderr_sink_st>(logger_name);
-}
 }  // namespace spdlog

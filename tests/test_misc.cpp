@@ -1,5 +1,6 @@
 #include "includes.h"
 #include "test_sink.h"
+#include "spdlog/async_logger.h"
 
 template <class T>
 std::string log_info(const T &what, spdlog::level::level_enum logger_level = spdlog::level::info) {
@@ -71,18 +72,6 @@ TEST_CASE("to_level_enum", "[convert_to_level_enum]") {
     REQUIRE(spdlog::level::from_str("null") == spdlog::level::off);
 }
 
-TEST_CASE("periodic flush", "[periodic_flush]") {
-    using spdlog::sinks::test_sink_mt;
-    auto logger = spdlog::create<test_sink_mt>("periodic_flush");
-    auto test_sink = std::static_pointer_cast<test_sink_mt>(logger->sinks()[0]);
-
-    spdlog::flush_every(std::chrono::seconds(1));
-    std::this_thread::sleep_for(std::chrono::milliseconds(1250));
-    REQUIRE(test_sink->flush_counter() == 1);
-    spdlog::flush_every(std::chrono::seconds(0));
-    spdlog::drop_all();
-}
-
 TEST_CASE("clone-logger", "[clone]") {
     using spdlog::sinks::test_sink_mt;
     auto test_sink = std::make_shared<test_sink_mt>();
@@ -101,14 +90,13 @@ TEST_CASE("clone-logger", "[clone]") {
     REQUIRE(test_sink->lines()[0] == "Some message 1");
     REQUIRE(test_sink->lines()[1] == "Some message 2");
 
-    spdlog::drop_all();
 }
 
 TEST_CASE("clone async", "[clone]") {
     using spdlog::sinks::test_sink_mt;
-    spdlog::init_thread_pool(4, 1);
+    auto tp = std::make_shared<spdlog::details::thread_pool>(4, 1);
     auto test_sink = std::make_shared<test_sink_mt>();
-    auto logger = std::make_shared<spdlog::async_logger>("orig", test_sink, spdlog::thread_pool());
+    auto logger = std::make_shared<spdlog::async_logger>("orig", test_sink, tp);
     logger->set_pattern("%v");
     auto cloned = logger->clone("clone");
 
@@ -125,8 +113,6 @@ TEST_CASE("clone async", "[clone]") {
     REQUIRE(test_sink->lines().size() == 2);
     REQUIRE(test_sink->lines()[0] == "Some message 1");
     REQUIRE(test_sink->lines()[1] == "Some message 2");
-
-    spdlog::drop_all();
 }
 
 TEST_CASE("default logger API", "[default logger]") {
@@ -164,7 +150,6 @@ TEST_CASE("default logger API", "[default logger]") {
     spdlog::set_level(spdlog::level::info);
     spdlog::debug("should not be logged");
     REQUIRE(oss.str().empty());
-    spdlog::drop_all();
     spdlog::set_pattern("%v");
 }
 

@@ -33,7 +33,7 @@ void replace_default_logger_example();
 
 int main(int, char *[]) {
     // Log levels can be loaded from argv/env using "SPDLOG_LEVEL"
-    load_levels_example();
+    //load_levels_example();
 
     spdlog::info("Welcome to spdlog version {}.{}.{}  !", SPDLOG_VER_MAJOR, SPDLOG_VER_MINOR,
                  SPDLOG_VER_PATCH);

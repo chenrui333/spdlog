@@ -11,7 +11,8 @@ TEST_CASE("simple_file_logger", "[simple_logger]") {
     prepare_logdir();
     spdlog::filename_t filename = SPDLOG_FILENAME_T(SIMPLE_LOG);
 
-    auto logger = spdlog::create<spdlog::sinks::basic_file_sink_mt>("logger", filename);
+    auto sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(filename);
+    auto logger = std::make_unique<spdlog::logger>("logger", std::move(sink));
     logger->set_pattern("%v");
 
     logger->info("Test message {}", 1);
@@ -28,7 +29,8 @@ TEST_CASE("flush_on", "[flush_on]") {
     prepare_logdir();
     spdlog::filename_t filename = SPDLOG_FILENAME_T(SIMPLE_LOG);
 
-    auto logger = spdlog::create<spdlog::sinks::basic_file_sink_mt>("logger", filename);
+    auto sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(filename);
+    auto logger = std::make_shared<spdlog::logger>("logger", sink);
     logger->set_pattern("%v");
     logger->set_level(spdlog::level::trace);
     logger->flush_on(spdlog::level::info);
@@ -49,13 +51,13 @@ TEST_CASE("rotating_file_logger1", "[rotating_logger]") {
     prepare_logdir();
     size_t max_size = 1024 * 10;
     spdlog::filename_t basename = SPDLOG_FILENAME_T(ROTATING_LOG);
-    auto logger = spdlog::rotating_logger_mt("logger", basename, max_size, 0);
+    auto sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(basename, max_size, 0);
+    spdlog::logger logger("logger", std::move(sink));
 
     for (int i = 0; i < 10; ++i) {
-        logger->info("Test message {}", i);
+        logger.info("Test message {}", i);
     }
-
-    logger->flush();
+    logger.flush();
     require_message_count(ROTATING_LOG, 10);
 }
 
@@ -66,16 +68,15 @@ TEST_CASE("rotating_file_logger2", "[rotating_logger]") {
 
     {
         // make an initial logger to create the first output file
-        auto logger = spdlog::rotating_logger_mt("logger", basename, max_size, 2, true);
+        auto sink =
+            std::make_shared<spdlog::sinks::rotating_file_sink_mt>(basename, max_size, 2, true);
+        auto logger = std::make_shared<spdlog::logger>("logger", sink);
         for (int i = 0; i < 10; ++i) {
             logger->info("Test message {}", i);
         }
-        // drop causes the logger destructor to be called, which is required so the
-        // next logger can rename the first output file.
-        spdlog::drop(logger->name());
     }
-
-    auto logger = spdlog::rotating_logger_mt("logger", basename, max_size, 2, true);
+    auto sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(basename, max_size, 2, true);
+    auto logger = std::make_shared<spdlog::logger>("logger", sink);
     for (int i = 0; i < 10; ++i) {
         logger->info("Test message {}", i);
     }
@@ -98,6 +99,7 @@ TEST_CASE("rotating_file_logger3", "[rotating_logger]") {
     prepare_logdir();
     size_t max_size = 0;
     spdlog::filename_t basename = SPDLOG_FILENAME_T(ROTATING_LOG);
-    REQUIRE_THROWS_AS(spdlog::rotating_logger_mt("logger", basename, max_size, 0),
-                      spdlog::spdlog_ex);
+    REQUIRE_THROWS_AS(
+        std::make_shared<spdlog::sinks::rotating_file_sink_mt>(basename, max_size, 2, true),
+        spdlog::spdlog_ex);
 }
