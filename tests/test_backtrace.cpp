@@ -1,6 +1,5 @@
 #include "includes.h"
 #include "test_sink.h"
-#include "spdlog/async.h"
 #include "spdlog/async_logger.h"
 
 TEST_CASE("bactrace1", "[bactrace]") {

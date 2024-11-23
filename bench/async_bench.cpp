@@ -7,7 +7,7 @@
 // bench.cpp : spdlog benchmarks
 //
 #include "spdlog/spdlog.h"
-#include "spdlog/async.h"
+#include "spdlog/async_logger.h"
 #include "spdlog/sinks/basic_file_sink.h"
 
 #if defined(SPDLOG_USE_STD_FORMAT)

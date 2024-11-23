@@ -9,7 +9,7 @@
 
 #include <spdlog/common.h>
 #include <spdlog/pattern_formatter.h>
-#include <spdlog/sinks/stdout_color_sinks-inl.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 
 namespace spdlog {
 
@@ -19,7 +19,7 @@ using default_sink_t = sinks::stdout_color_sink_mt;
 using default_sink_t = sinks::null_sink_mt;
 #endif
 
-SPDLOG_INLINE static auto s_logger = std::make_shared<logger>("", std::make_shared<default_sink_t>());
+static auto s_logger = std::make_shared<logger>("", std::make_shared<default_sink_t>());
 
 SPDLOG_INLINE void set_formatter(std::unique_ptr<spdlog::formatter> formatter) {
     s_logger->set_formatter(std::move(formatter));

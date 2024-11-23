@@ -19,12 +19,10 @@
 #include <sstream>
 #include <string>
 #include <iomanip>
-#include <stdlib.h>
 
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 
 #include "spdlog/spdlog.h"
-#include "spdlog/async.h"
 #include "spdlog/details/fmt_helper.h"
 #include "spdlog/details/os.h"
 #include "spdlog/sinks/basic_file_sink.h"

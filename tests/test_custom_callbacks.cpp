@@ -5,7 +5,6 @@
 #include "includes.h"
 #include "test_sink.h"
 #include "spdlog/sinks/callback_sink.h"
-#include "spdlog/async.h"
 #include "spdlog/common.h"
 
 TEST_CASE("custom_callback_logger", "[custom_callback_logger]") {

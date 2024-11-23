@@ -9,6 +9,7 @@
 
 #include <cassert>
 #include <spdlog/common.h>
+#include "spdlog/async_logger.h"
 
 namespace spdlog {
 namespace details {

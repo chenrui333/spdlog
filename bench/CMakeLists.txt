@@ -23,10 +23,6 @@ if(NOT benchmark_FOUND)
     FetchContent_MakeAvailable(googlebenchmark)
 endif()
 
-add_executable(bench bench.cpp)
-spdlog_enable_warnings(bench)
-target_link_libraries(bench PRIVATE spdlog::spdlog)
-
 add_executable(async_bench async_bench.cpp)
 target_link_libraries(async_bench PRIVATE spdlog::spdlog)
 

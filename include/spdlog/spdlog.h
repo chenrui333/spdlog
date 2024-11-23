@@ -12,9 +12,6 @@
 #include <spdlog/common.h>
 #include <spdlog/logger.h>
 #include <spdlog/version.h>
-
-#include <chrono>
-#include <functional>
 #include <memory>
 #include <string>
 

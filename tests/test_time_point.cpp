@@ -1,6 +1,5 @@
 #include "includes.h"
 #include "test_sink.h"
-#include "spdlog/async.h"
 
 TEST_CASE("time_point1", "[time_point log_msg]") {
     std::shared_ptr<spdlog::sinks::test_sink_st> test_sink(new spdlog::sinks::test_sink_st);

@@ -6,6 +6,7 @@
 #include <spdlog/details/log_msg_buffer.h>
 #include <spdlog/details/mpmc_blocking_q.h>
 #include <spdlog/details/os.h>
+#include <spdlog/async_overflow_policy.h>
 
 #include <functional>
 #include <memory>
@@ -15,7 +16,6 @@
 namespace spdlog {
 class async_logger;
 
-enum class async_overflow_policy;
 namespace details {
 
 using async_logger_ptr = std::shared_ptr<spdlog::async_logger>;
