@@ -19,7 +19,6 @@
 #endif
 
 #include "utils.h"
-#include <atomic>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -111,7 +110,7 @@ int main(int argc, char *argv[]) {
             auto logger = std::make_shared<async_logger>(
                 "async_logger", std::move(file_sink), std::move(tp), async_overflow_policy::block);
             bench_mt(howmany, std::move(logger), threads);
-            // verify_file(filename, howmany);
+            verify_file(filename, howmany);
         }
 
         spdlog::info("");
