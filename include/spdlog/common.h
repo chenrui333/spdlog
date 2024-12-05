@@ -5,7 +5,6 @@
 
 #include <array>
 #include <atomic>
-#include <cstdio>
 #include <exception>
 #include <functional>
 #include <initializer_list>
