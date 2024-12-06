@@ -37,7 +37,7 @@
 namespace spdlog {
 namespace sinks {
 template <typename Mutex>
-class dup_filter_sink : public dist_sink<Mutex> {
+class dup_filter_sink final : public dist_sink<Mutex> {
 public:
     template <class Rep, class Period>
     explicit dup_filter_sink(std::chrono::duration<Rep, Period> max_skip_duration, level notification_level = level::info)

@@ -292,7 +292,7 @@ TEST_CASE("clone-formatter-2", "[pattern_formatter]") {
     REQUIRE(to_string_view(formatted_1) == to_string_view(formatted_2));
 }
 
-class custom_test_flag : public spdlog::custom_flag_formatter {
+class custom_test_flag final : public spdlog::custom_flag_formatter {
 public:
     explicit custom_test_flag(std::string txt)
         : some_txt{std::move(txt)} {}
