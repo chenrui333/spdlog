@@ -6,7 +6,7 @@
 #endif
 
 // clang-format off
-#include "spdlog/details/windows_include.h"
+#include "spdlog/details/windows_include.h" // must be included before fileapi.h etc.
 // clang-format on
 
 #include <fileapi.h>  // for FlushFileBuffers
@@ -151,7 +151,7 @@ void sleep_for_millis(unsigned int milliseconds) noexcept { ::Sleep(milliseconds
 // Try tp convert wstring filename to string. Return "???" if failed
 std::string filename_to_str(const filename_t &filename) {
     static_assert(std::is_same_v<filename_t::value_type, wchar_t>, "filename_t type must be wchar_t");
-    try {        
+    try {
         memory_buf_t buf;
         wstr_to_utf8buf(filename.wstring(), buf);
         return std::string(buf.data(), buf.size());
@@ -159,7 +159,7 @@ std::string filename_to_str(const filename_t &filename) {
     catch (...) {
 		return "???";
 	}
-    
+
 }
 
 int pid() noexcept { return static_cast<int>(::GetCurrentProcessId()); }
