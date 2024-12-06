@@ -11,8 +11,8 @@ namespace spdlog {
 namespace details {
 namespace os {
 
-bool remove(const filename_t &filename) { 
-    return std::filesystem::remove(filename); 
+bool remove(const filename_t &filename) {
+    return std::filesystem::remove(filename);
 }
 
 bool remove_if_exists(const filename_t &filename) {
@@ -42,7 +42,6 @@ bool path_exists(const filename_t &filename) noexcept { return std::filesystem::
 // "abc///" => "abc//"
 filename_t dir_name(const filename_t &path) { return path.parent_path(); }
 
-
 // Create the given directory - and all directories leading to it
 // return true on success or if the directory already exists
 bool create_dir(const filename_t &path) {
@@ -50,19 +49,13 @@ bool create_dir(const filename_t &path) {
     return std::filesystem::create_directories(path, ec) || !ec;
 }
 
-
 // Return file path and its extension:
 //
 // "mylog.txt" => ("mylog", ".txt")
 // "mylog" => ("mylog", "")
 // "mylog." => ("mylog", ".")
 // "/dir1/dir2/mylog.txt" => ("/dir1/dir2/mylog", ".txt")
-//
-// the starting dot in filenames is ignored (hidden files):
-//
-// ".mylog" => (".mylog". "")
-// "my_folder/.mylog" => ("my_folder/.mylog", "")
-// "my_folder/.mylog.txt" => ("my_folder/.mylog", ".txt")
+// ".mylog" => (".mylog", "")
 std::tuple<filename_t, filename_t> split_by_extension(const filename_t &fname) {
     const auto ext = fname.extension();
     auto without_ext = filename_t(fname).replace_extension();
