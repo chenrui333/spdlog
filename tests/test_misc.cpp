@@ -115,14 +115,14 @@ TEST_CASE("clone async", "[clone]") {
     REQUIRE(test_sink->lines()[1] == "Some message 2");
 }
 
-TEST_CASE("default logger API", "[default logger]") {
+TEST_CASE("global logger API", "[global logger]") {
     std::ostringstream oss;
     auto oss_sink = std::make_shared<spdlog::sinks::ostream_sink_mt>(oss);
 
-    spdlog::set_default_logger(std::make_shared<spdlog::logger>("oss", oss_sink));
+    spdlog::set_global_logger(std::make_shared<spdlog::logger>("oss", oss_sink));
     spdlog::set_pattern("*** %v");
 
-    spdlog::default_logger()->set_level(spdlog::level::trace);
+    spdlog::global_logger()->set_level(spdlog::level::trace);
     spdlog::trace("hello trace");
     REQUIRE(oss.str() == "*** hello trace" + std::string(spdlog::details::os::default_eol));
 

@@ -6,8 +6,8 @@
 #include "spdlog/logger.h"
 #include "spdlog/pattern_formatter.h"
 
-#ifndef SPDLOG_DISABLE_DEFAULT_LOGGER
-    // support for the default stdout color logger
+#ifndef SPDLOG_DISABLE_GLOBAL_LOGGER
+    // support for the global stdout color logger
     #ifdef _WIN32
         #include "spdlog/sinks/wincolor_sink.h"
     #else
@@ -15,7 +15,7 @@
         #include "spdlog/sinks/ansicolor_sink.h"
 
     #endif
-#endif  // SPDLOG_DISABLE_DEFAULT_LOGGER
+#endif  // SPDLOG_DISABLE_GLOBAL_LOGGER
 
 #include <memory>
 #include <string>
@@ -27,35 +27,35 @@ namespace spdlog {
 namespace details {
 
 context::context() {
-#ifndef SPDLOG_DISABLE_DEFAULT_LOGGER
-    // create default logger (ansicolor_stdout_sink_mt or wincolor_stdout_sink_mt in windows).
+#ifndef SPDLOG_DISABLE_GLOBAL_LOGGER
+    // create global logger (ansicolor_stdout_sink_mt or wincolor_stdout_sink_mt in windows).
     #ifdef _WIN32
     auto color_sink = std::make_shared<sinks::wincolor_stdout_sink_mt>();
     #else
     auto color_sink = std::make_shared<sinks::ansicolor_stdout_sink_mt>();
     #endif
-    const char *default_logger_name = "";
-    default_logger_ = std::make_shared<logger>(default_logger_name, std::move(color_sink));
+    const char *global_logger_name = "";
+    global_logger_ = std::make_shared<logger>(global_logger_name, std::move(color_sink));
 
-#endif  // SPDLOG_DISABLE_DEFAULT_LOGGER
+#endif  // SPDLOG_DISABLE_GLOBAL_LOGGER
 }
 
 context::~context() = default;
 
-std::shared_ptr<logger> context::default_logger() {
-    return default_logger_;
+std::shared_ptr<logger> context::global_logger() {
+    return global_logger_;
 }
 
-// Return raw ptr to the default logger.
+// Return raw ptr to the global logger.
 // To be used directly by the spdlog default api (e.g. spdlog::info)
-// This make the default API faster, but cannot be used concurrently with set_default_logger().
-// e.g do not call set_default_logger() from one thread while calling spdlog::info() from another.
-logger *context::get_default_raw() const noexcept{ return default_logger_.get(); }
+// This make the default API faster, but cannot be used concurrently with set_global_logger().
+// e.g do not call set_global_logger() from one thread while calling spdlog::info() from another.
+logger *context::global_logger_raw() const noexcept{ return global_logger_.get(); }
 
-// set default logger.
-// default logger is stored in default_logger_ (for faster retrieval) and in the loggers_ map.
-void context::set_default_logger(std::shared_ptr<logger> new_default_logger) {
-    default_logger_ = std::move(new_default_logger);
+// set global logger.
+// global logger is stored in global_logger_ (for faster retrieval) and in the loggers_ map.
+void context::set_logger(std::shared_ptr<logger> new_global_logger) {
+    global_logger_ = std::move(new_global_logger);
 }
 
 void context::set_tp(std::shared_ptr<thread_pool> tp) {

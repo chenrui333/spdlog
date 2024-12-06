@@ -31,67 +31,65 @@ std::shared_ptr<logger> create(std::string logger_name, SinkArgs &&...sink_args)
     return default_factory::create<Sink>(std::move(logger_name), std::forward<SinkArgs>(sink_args)...);
 }
 
-// Set formatter of the default logger. Each sink in each logger will get a clone of this object
+// Set formatter of the global logger. Each sink in each logger will get a clone of this object
 SPDLOG_API void set_formatter(std::unique_ptr<formatter> formatter);
 
-// Set format string of the default logger.
+// Set format string of the global logger.
 // example: spdlog::set_pattern("%Y-%m-%d %H:%M:%S.%e %l : %v");
 SPDLOG_API void set_pattern(std::string pattern, pattern_time_type time_type = pattern_time_type::local);
 
-// Get logging level of the default logger
+// Get logging level of the global logger
 SPDLOG_API level get_level();
 
-// Set logging level of the default logger
+// Set logging level of the global logger
 SPDLOG_API void set_level(level level);
 
-// Determine whether the default logger should log messages with a certain level
+// Determine whether the global logger should log messages with a certain level
 SPDLOG_API bool should_log(level level);
 
-// Set flush level of the default logger.
+// Set flush level of the global logger.
 SPDLOG_API void flush_on(level level);
 
 
-// Set error handler for the default logger
+// Set error handler for the global logger
 SPDLOG_API void set_error_handler(void (*handler)(const std::string &msg));
 
 // calls context::shutdown() to perform final cleanups
 SPDLOG_API void shutdown();
 
 
-// API for using default logger (stdout_color_mt),
+// API for using global logger (stdout_color_mt),
 // e.g: spdlog::info("Message {}", 1);
 //
-// The default logger object can be accessed using the spdlog::default_logger():
+// The global logger object can be accessed using the spdlog::global_logger():
 // For example, to add another sink to it:
-// spdlog::default_logger()->sinks().push_back(some_sink);
+// spdlog::global_logger()->sinks().push_back(some_sink);
 //
-// The default logger can be replaced using spdlog::set_default_logger(new_logger).
+// The global logger can be replaced using spdlog::set_global_logger(new_logger).
 // For example, to replace it with a file logger.
 //
 // IMPORTANT:
-// The default API is thread safe (for _mt loggers), but:
-// set_default_logger() *should not* be used concurrently with the default API.
-// e.g. do not call set_default_logger() from one thread while calling spdlog::info() from another.
+// Do not call set_global_logger() from one thread while calling spdlog::info() from another.
 
-SPDLOG_API std::shared_ptr<logger> default_logger();
+SPDLOG_API std::shared_ptr<logger> global_logger();
 
-SPDLOG_API logger *default_logger_raw();
+SPDLOG_API logger *global_logger_raw();
 
-SPDLOG_API void set_default_logger(std::shared_ptr<logger> default_logger);
+SPDLOG_API void set_global_logger(std::shared_ptr<logger> global_logger);
 
 template <typename... Args>
 void log(source_loc source, level lvl, format_string_t<Args...> fmt, Args &&...args) {
-    default_logger_raw()->log(source, lvl, fmt, std::forward<Args>(args)...);
+    global_logger_raw()->log(source, lvl, fmt, std::forward<Args>(args)...);
 }
 
 template <typename... Args>
 void log(level lvl, format_string_t<Args...> fmt, Args &&...args) {
-    default_logger_raw()->log(lvl, fmt, std::forward<Args>(args)...);
+    global_logger_raw()->log(lvl, fmt, std::forward<Args>(args)...);
 }
 
-inline void log(level lvl, std::string_view msg) { default_logger_raw()->log(lvl, msg); }
+inline void log(level lvl, std::string_view msg) { global_logger_raw()->log(lvl, msg); }
 
-inline void log(source_loc loc, level lvl, std::string_view msg) { default_logger_raw()->log(loc, lvl, msg); }
+inline void log(source_loc loc, level lvl, std::string_view msg) { global_logger_raw()->log(loc, lvl, msg); }
 
 template <typename... Args>
 void trace(format_string_t<Args...> fmt, Args &&...args) {
@@ -160,7 +158,7 @@ inline void critical(std::string_view msg) { log(level::critical, msg); }
 
 #if SPDLOG_ACTIVE_LEVEL <= SPDLOG_LEVEL_TRACE
     #define SPDLOG_LOGGER_TRACE(logger, ...) SPDLOG_LOGGER_CALL(logger, spdlog::level::trace, __VA_ARGS__)
-    #define SPDLOG_TRACE(...) SPDLOG_LOGGER_TRACE(spdlog::default_logger_raw(), __VA_ARGS__)
+    #define SPDLOG_TRACE(...) SPDLOG_LOGGER_TRACE(spdlog::global_logger_raw(), __VA_ARGS__)
 #else
     #define SPDLOG_LOGGER_TRACE(logger, ...) (void)0
     #define SPDLOG_TRACE(...) (void)0
@@ -168,7 +166,7 @@ inline void critical(std::string_view msg) { log(level::critical, msg); }
 
 #if SPDLOG_ACTIVE_LEVEL <= SPDLOG_LEVEL_DEBUG
     #define SPDLOG_LOGGER_DEBUG(logger, ...) SPDLOG_LOGGER_CALL(logger, spdlog::level::debug, __VA_ARGS__)
-    #define SPDLOG_DEBUG(...) SPDLOG_LOGGER_DEBUG(spdlog::default_logger_raw(), __VA_ARGS__)
+    #define SPDLOG_DEBUG(...) SPDLOG_LOGGER_DEBUG(spdlog::global_logger_raw(), __VA_ARGS__)
 #else
     #define SPDLOG_LOGGER_DEBUG(logger, ...) (void)0
     #define SPDLOG_DEBUG(...) (void)0
@@ -176,7 +174,7 @@ inline void critical(std::string_view msg) { log(level::critical, msg); }
 
 #if SPDLOG_ACTIVE_LEVEL <= SPDLOG_LEVEL_INFO
     #define SPDLOG_LOGGER_INFO(logger, ...) SPDLOG_LOGGER_CALL(logger, spdlog::level::info, __VA_ARGS__)
-    #define SPDLOG_INFO(...) SPDLOG_LOGGER_INFO(spdlog::default_logger_raw(), __VA_ARGS__)
+    #define SPDLOG_INFO(...) SPDLOG_LOGGER_INFO(spdlog::global_logger_raw(), __VA_ARGS__)
 #else
     #define SPDLOG_LOGGER_INFO(logger, ...) (void)0
     #define SPDLOG_INFO(...) (void)0
@@ -184,7 +182,7 @@ inline void critical(std::string_view msg) { log(level::critical, msg); }
 
 #if SPDLOG_ACTIVE_LEVEL <= SPDLOG_LEVEL_WARN
     #define SPDLOG_LOGGER_WARN(logger, ...) SPDLOG_LOGGER_CALL(logger, spdlog::level::warn, __VA_ARGS__)
-    #define SPDLOG_WARN(...) SPDLOG_LOGGER_WARN(spdlog::default_logger_raw(), __VA_ARGS__)
+    #define SPDLOG_WARN(...) SPDLOG_LOGGER_WARN(spdlog::global_logger_raw(), __VA_ARGS__)
 #else
     #define SPDLOG_LOGGER_WARN(logger, ...) (void)0
     #define SPDLOG_WARN(...) (void)0
@@ -192,7 +190,7 @@ inline void critical(std::string_view msg) { log(level::critical, msg); }
 
 #if SPDLOG_ACTIVE_LEVEL <= SPDLOG_LEVEL_ERROR
     #define SPDLOG_LOGGER_ERROR(logger, ...) SPDLOG_LOGGER_CALL(logger, spdlog::level::err, __VA_ARGS__)
-    #define SPDLOG_ERROR(...) SPDLOG_LOGGER_ERROR(spdlog::default_logger_raw(), __VA_ARGS__)
+    #define SPDLOG_ERROR(...) SPDLOG_LOGGER_ERROR(spdlog::global_logger_raw(), __VA_ARGS__)
 #else
     #define SPDLOG_LOGGER_ERROR(logger, ...) (void)0
     #define SPDLOG_ERROR(...) (void)0
@@ -200,7 +198,7 @@ inline void critical(std::string_view msg) { log(level::critical, msg); }
 
 #if SPDLOG_ACTIVE_LEVEL <= SPDLOG_LEVEL_CRITICAL
     #define SPDLOG_LOGGER_CRITICAL(logger, ...) SPDLOG_LOGGER_CALL(logger, spdlog::level::critical, __VA_ARGS__)
-    #define SPDLOG_CRITICAL(...) SPDLOG_LOGGER_CRITICAL(spdlog::default_logger_raw(), __VA_ARGS__)
+    #define SPDLOG_CRITICAL(...) SPDLOG_LOGGER_CRITICAL(spdlog::global_logger_raw(), __VA_ARGS__)
 #else
     #define SPDLOG_LOGGER_CRITICAL(logger, ...) (void)0
     #define SPDLOG_CRITICAL(...) (void)0

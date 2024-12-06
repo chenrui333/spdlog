@@ -13,34 +13,33 @@
 namespace spdlog {
 
 
+std::shared_ptr<logger> global_logger() { return details::context::instance().global_logger(); }
+
+logger *global_logger_raw() { return details::context::instance().global_logger_raw(); }
+
+void set_global_logger(std::shared_ptr<logger> global_logger) {
+    details::context::instance().set_logger(std::move(global_logger));
+}
 
 void set_formatter(std::unique_ptr<formatter> formatter) {
-    default_logger_raw()->set_formatter(std::move(formatter));
+    global_logger_raw()->set_formatter(std::move(formatter));
 }
 
 void set_pattern(std::string pattern, pattern_time_type time_type) {
     set_formatter(std::make_unique<pattern_formatter>(std::move(pattern), time_type));
 }
 
-level get_level() { return default_logger_raw()->log_level(); }
+level get_level() { return global_logger_raw()->log_level(); }
 
-bool should_log(level level) { return default_logger_raw()->should_log(level); }
+bool should_log(level level) { return global_logger_raw()->should_log(level); }
 
-void set_level(level level) { default_logger_raw()->set_level(level); }
+void set_level(level level) { global_logger_raw()->set_level(level); }
 
-void flush_on(level level) { default_logger_raw()->flush_on(level); }
+void flush_on(level level) { global_logger_raw()->flush_on(level); }
 
-void set_error_handler(void (*handler)(const std::string &msg)) { default_logger_raw()->set_error_handler(handler); }
-
+void set_error_handler(void (*handler)(const std::string &msg)) { global_logger_raw()->set_error_handler(handler); }
 
 void shutdown() { details::context::instance().shutdown(); }
 
-std::shared_ptr<logger> default_logger() { return details::context::instance().default_logger(); }
-
-logger *default_logger_raw() { return details::context::instance().get_default_raw(); }
-
-void set_default_logger(std::shared_ptr<logger> default_logger) {
-    details::context::instance().set_default_logger(std::move(default_logger));
-}
 
 }  // namespace spdlog

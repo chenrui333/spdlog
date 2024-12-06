@@ -85,7 +85,7 @@ endif()
 
 option(SPDLOG_PREVENT_CHILD_FD "Prevent from child processes to inherit log file descriptors" OFF)
 option(SPDLOG_NO_THREAD_ID "prevent spdlog from querying the thread id on each log call if thread id is not needed" OFF)
-option(SPDLOG_DISABLE_DEFAULT_LOGGER "Disable default logger creation" OFF)
+option(SPDLOG_DISABLE_GLOBAL_LOGGER "Disable global logger creation" OFF)
 option(SPDLOG_NO_TLS "Disable thread local storage" OFF)
 
 # clang-tidy
@@ -309,7 +309,7 @@ foreach(SPDLOG_OPTION
     SPDLOG_CLOCK_COARSE
     SPDLOG_PREVENT_CHILD_FD
     SPDLOG_NO_THREAD_ID
-    SPDLOG_DISABLE_DEFAULT_LOGGER
+    SPDLOG_DISABLE_GLOBAL_LOGGER
     SPDLOG_NO_TLS
     SPDLOG_FWRITE_UNLOCKED)
     if(${SPDLOG_OPTION})

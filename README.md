@@ -410,10 +410,10 @@ void file_events_example()
 ---
 #### Replace the Default Logger
 ```c++
-void replace_default_logger_example()
+void replace_global_logger_example()
 {
-    auto new_logger = spdlog::basic_logger_mt("new_default_logger", "logs/new-default-log.txt", true);
-    spdlog::set_default_logger(new_logger);
+    auto new_logger = spdlog::basic_logger_mt("new_global_logger", "logs/new-default-log.txt", true);
+    spdlog::set_global_logger(new_logger);
     spdlog::info("new logger log message");
 }
 ```

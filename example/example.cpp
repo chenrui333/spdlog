@@ -24,7 +24,7 @@ void syslog_example();
 void udp_example();
 void custom_flags_example();
 void file_events_example();
-void replace_default_logger_example();
+void replace_global_logger_example();
 
 #include "spdlog/spdlog.h"
 #include "spdlog/version.h"
@@ -66,7 +66,7 @@ int main(int, char *[]) {
         udp_example();
         custom_flags_example();
         file_events_example();
-        replace_default_logger_example();
+        replace_global_logger_example();
 
         // Release all spdlog resources
         // This is optional (only mandatory if using windows + async log).
@@ -165,9 +165,9 @@ void vector_example() {
 // Compile time log levels.
 // define SPDLOG_ACTIVE_LEVEL to required level (e.g. SPDLOG_LEVEL_TRACE)
 void trace_example() {
-    // trace from default logger
+    // trace from global logger
     SPDLOG_TRACE("Some trace message.. {} ,{}", 1, 3.23);
-    // debug from default logger
+    // debug from global logger
     SPDLOG_DEBUG("Some debug message.. {} ,{}", 1, 3.23);
 }
 
@@ -287,15 +287,15 @@ void file_events_example() {
     my_logger.info("Some log line");
 }
 
-void replace_default_logger_example() {
+void replace_global_logger_example() {
     // store the old logger so we don't break other examples.
-    auto old_logger = spdlog::default_logger();
+    auto old_logger = spdlog::global_logger();
 
-    auto new_logger = spdlog::basic_logger_mt("new_default_logger", "logs/new-default-log.txt", true);
-    spdlog::set_default_logger(new_logger);
+    auto new_logger = spdlog::basic_logger_mt("new_global_logger", "logs/new-default-log.txt", true);
+    spdlog::set_global_logger(new_logger);
     spdlog::set_level(spdlog::level::info);
     spdlog::debug("This message should not be displayed!");
     spdlog::set_level(spdlog::level::trace);
     spdlog::debug("This message should be displayed..");
-    spdlog::set_default_logger(old_logger);
+    spdlog::set_global_logger(old_logger);
 }

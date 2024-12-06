@@ -40,7 +40,7 @@ void bench_logger(benchmark::State &state, std::shared_ptr<spdlog::logger> logge
 }
 
 void bench_global_logger(benchmark::State &state, std::shared_ptr<spdlog::logger> logger) {
-    spdlog::set_default_logger(std::move(logger));
+    spdlog::set_global_logger(std::move(logger));
     int i = 0;
     for (auto _ : state) {
         spdlog::info("Hello logger: msg number {}...............", ++i);
@@ -57,7 +57,7 @@ void bench_disabled_macro(benchmark::State &state, std::shared_ptr<spdlog::logge
 }
 
 void bench_disabled_macro_global_logger(benchmark::State &state, std::shared_ptr<spdlog::logger> logger) {
-    spdlog::set_default_logger(std::move(logger));
+    spdlog::set_global_logger(std::move(logger));
     int i = 0;
     benchmark::DoNotOptimize(i);       // prevent unused warnings
     benchmark::DoNotOptimize(logger);  // prevent unused warnings
