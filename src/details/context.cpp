@@ -1,10 +1,8 @@
 // Copyright(c) 2015-present, Gabi Melman & spdlog contributors.
 // Distributed under the MIT License (http://opensource.org/licenses/MIT)
 
-#include "spdlog/common.h"
 #include "spdlog/details/context.h"
 #include "spdlog/logger.h"
-#include "spdlog/pattern_formatter.h"
 
 #ifndef SPDLOG_DISABLE_GLOBAL_LOGGER
     // support for the global stdout color logger
@@ -18,10 +16,6 @@
 #endif  // SPDLOG_DISABLE_GLOBAL_LOGGER
 
 #include <memory>
-#include <string>
-#include <unordered_map>
-
-static constexpr size_t small_map_threshold = 10;
 
 namespace spdlog {
 namespace details {
@@ -52,8 +46,7 @@ std::shared_ptr<logger> context::global_logger() {
 // e.g do not call set_global_logger() from one thread while calling spdlog::info() from another.
 logger *context::global_logger_raw() const noexcept{ return global_logger_.get(); }
 
-// set global logger.
-// global logger is stored in global_logger_ (for faster retrieval) and in the loggers_ map.
+// set global logger
 void context::set_logger(std::shared_ptr<logger> new_global_logger) {
     global_logger_ = std::move(new_global_logger);
 }

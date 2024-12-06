@@ -11,7 +11,6 @@
 #include <memory>
 #include <mutex>
 #include <string>
-#include <unordered_map>
 
 #include "../common.h"
 #include "./periodic_worker.h"
@@ -24,8 +23,6 @@ class thread_pool;
 
 class SPDLOG_API context {
 public:
-    using log_levels = std::unordered_map<std::string, level>;
-
     static context &instance();
     context(const context &) = delete;
     context &operator=(const context &) = delete;
