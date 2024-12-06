@@ -23,8 +23,9 @@ class thread_pool;
 
 class SPDLOG_API context {
 public:
-    context();
-    ~context();
+    context() = default;
+    explicit context(std::unique_ptr<logger> global_logger);
+    ~context() = default;
     context(const context &) = delete;
     context &operator=(const context &) = delete;
 

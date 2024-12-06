@@ -12,7 +12,12 @@
 
 namespace spdlog {
 
-static std::shared_ptr<details::context> s_context = std::make_unique<details::context>();
+#ifndef SPDLOG_DISABLE_GLOBAL_LOGGER
+static std::shared_ptr s_context =
+    std::make_unique<details::context>(std::make_unique<logger>("", std::make_unique<sinks::stdout_color_sink_mt>()));
+#else
+static std::shared_ptr s_context = std::make_unique<details::context>();
+#endif
 
 void set_context(std::shared_ptr<details::context> context) { s_context = std::move(context); }
 

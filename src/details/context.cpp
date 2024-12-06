@@ -13,14 +13,9 @@
 namespace spdlog {
 namespace details {
 
-context::context() {
-#ifndef SPDLOG_DISABLE_GLOBAL_LOGGER
-    auto color_sink = std::make_shared<sinks::stdout_color_sink_mt>();
-    global_logger_ = std::make_shared<logger>(std::string(), std::move(color_sink));
-#endif  // SPDLOG_DISABLE_GLOBAL_LOGGER
+context::context(std::unique_ptr<logger> global_logger) {
+    global_logger_ = std::move(global_logger);
 }
-
-context::~context() = default;
 
 std::shared_ptr<logger> context::global_logger() {
     return global_logger_;
