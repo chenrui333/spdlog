@@ -125,21 +125,23 @@ void wincolor_sink<Mutex>::write_to_file_(const memory_buf_t &formatted) {
 template class SPDLOG_API wincolor_stdout_sink<std::mutex>;
 template class SPDLOG_API wincolor_stdout_sink<details::null_mutex>;
 
-template<>
+
+// spdlog::sinks::wincolor_stderr_sink<struct spdlog::details::null_mutex>::wincolor_stderr_sink<struct spdlog::details::null_mutex>(enum spdlog::color_mode)"
+template<> class SPDLOG_API
 wincolor_stdout_sink<std::mutex>::wincolor_stdout_sink(color_mode mode)
     : wincolor_sink<std::mutex>(::GetStdHandle(STD_OUTPUT_HANDLE), mode) {}
 
 
-template<>
+template<> class SPDLOG_API
 wincolor_stdout_sink<details::null_mutex>::wincolor_stdout_sink(color_mode mode)
     : wincolor_sink<details::null_mutex>(::GetStdHandle(STD_OUTPUT_HANDLE), mode) {}
 
 // wincolor_stderr_sink
-template<>
+template<> class SPDLOG_API
 wincolor_stderr_sink<std::mutex>::wincolor_stderr_sink(color_mode mode)
     : wincolor_sink<std::mutex>(::GetStdHandle(STD_ERROR_HANDLE), mode) {}
 
-template<>
+template<> class SPDLOG_API
 wincolor_stderr_sink<details::null_mutex>::wincolor_stderr_sink(color_mode mode)
     : wincolor_sink<details::null_mutex>(::GetStdHandle(STD_ERROR_HANDLE), mode) {}
 
