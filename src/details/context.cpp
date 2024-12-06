@@ -5,12 +5,7 @@
 #include "spdlog/logger.h"
 
 #ifndef SPDLOG_DISABLE_GLOBAL_LOGGER
-    // support for the global stdout color logger
-    #ifdef _WIN32
-        #include "spdlog/sinks/wincolor_sink.h"
-    #else
-        #include "spdlog/sinks/ansicolor_sink.h"
-    #endif
+#include "spdlog/sinks/stdout_color_sinks.h"
 #endif  // SPDLOG_DISABLE_GLOBAL_LOGGER
 
 #include <memory>
@@ -20,15 +15,8 @@ namespace details {
 
 context::context() {
 #ifndef SPDLOG_DISABLE_GLOBAL_LOGGER
-    // create global logger (ansicolor_stdout_sink_mt or wincolor_stdout_sink_mt in windows).
-    #ifdef _WIN32
-    auto color_sink = std::make_shared<sinks::wincolor_stdout_sink_mt>();
-    #else
-    auto color_sink = std::make_shared<sinks::ansicolor_stdout_sink_mt>();
-    #endif
-    const char *global_logger_name = "";
-    global_logger_ = std::make_shared<logger>(global_logger_name, std::move(color_sink));
-
+    auto color_sink = std::make_shared<sinks::stdout_color_sink_mt>();
+    global_logger_ = std::make_shared<logger>(std::string(), std::move(color_sink));
 #endif  // SPDLOG_DISABLE_GLOBAL_LOGGER
 }
 
