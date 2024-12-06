@@ -228,7 +228,7 @@ void err_handler_example() {
 
 // syslog example (linux/osx/freebsd)
 #ifndef _WIN32
-    #include "spdlog/sinks/syslog_sink.h"
+#include "spdlog/sinks/syslog_sink.h"
 void syslog_example() {
     std::string ident = "spdlog-example";
     auto syslog_logger = spdlog::syslog_logger_mt("syslog", ident, LOG_PID);
