@@ -51,13 +51,10 @@ public:
 }  // namespace spdlog
 
 // Support for fmt formatting  (e.g. "{:012.9}" or just "{}")
-namespace fmt {
-
 template <>
-struct formatter<spdlog::stopwatch> : formatter<double> {
+struct fmt::formatter<spdlog::stopwatch> : formatter<double> {
     template <typename FormatContext>
     auto format(const spdlog::stopwatch &sw, FormatContext &ctx) const -> decltype(ctx.out()) {
         return formatter<double>::format(sw.elapsed().count(), ctx);
     }
-};
-}  // namespace fmt
+};  // namespace fmt

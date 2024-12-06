@@ -150,5 +150,5 @@ void bench_mt(int howmany, std::shared_ptr<spdlog::logger> logger, int thread_co
 
     auto delta = high_resolution_clock::now() - start;
     auto delta_d = duration_cast<duration<double>>(delta).count();
-    spdlog::info("Elapsed: {} secs\t {:L}/sec", delta_d, int(howmany / delta_d));
+    spdlog::info("Elapsed: {} secs\t {:L}/sec", delta_d, static_cast<int>(howmany / delta_d));
 }

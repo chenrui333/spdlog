@@ -88,10 +88,8 @@ inline details::dump_info<It> to_hex(const It range_begin, const It range_end, s
 
 }  // namespace spdlog
 
-namespace fmt {
-
 template <typename T>
-struct formatter<spdlog::details::dump_info<T>, char> {
+struct fmt::formatter<spdlog::details::dump_info<T>, char> {
     const char delimiter = ' ';
     bool put_newlines = true;
     bool put_delimiters = true;
@@ -202,5 +200,4 @@ struct formatter<spdlog::details::dump_info<T>, char> {
             spdlog::fmt_lib::format_to(inserter, SPDLOG_FMT_STRING("{:04X}: "), pos);
         }
     }
-};
-}  // namespace fmt
+};  // namespace fmt
