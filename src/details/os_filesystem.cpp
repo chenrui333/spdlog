@@ -11,9 +11,7 @@ namespace spdlog {
 namespace details {
 namespace os {
 
-bool remove(const filename_t &filename) {
-    return std::filesystem::remove(filename);
-}
+bool remove(const filename_t &filename) { return std::filesystem::remove(filename); }
 
 bool remove_if_exists(const filename_t &filename) {
     if (path_exists(filename)) {

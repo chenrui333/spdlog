@@ -5,12 +5,12 @@
 
 #include <array>
 #include <atomic>
+#include <chrono>
 #include <exception>
 #include <functional>
 #include <initializer_list>
 #include <memory>
 #include <string>
-#include <chrono>
 #include <string_view>
 
 #include "./source_loc.h"

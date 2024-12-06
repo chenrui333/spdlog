@@ -1,4 +1,4 @@
-﻿//
+//
 // Copyright(c) 2015 Gabi Melman.
 // Distributed under the MIT License (http://opensource.org/licenses/MIT)
 
@@ -173,6 +173,7 @@ void trace_example() {
 
 // stopwatch example
 #include <thread>
+
 #include "spdlog/stopwatch.h"
 void stopwatch_example() {
     spdlog::stopwatch sw;
@@ -227,7 +228,7 @@ void err_handler_example() {
 
 // syslog example (linux/osx/freebsd)
 #ifndef _WIN32
-#include "spdlog/sinks/syslog_sink.h"
+    #include "spdlog/sinks/syslog_sink.h"
 void syslog_example() {
     std::string ident = "spdlog-example";
     auto syslog_logger = spdlog::syslog_logger_mt("syslog", ident, LOG_PID);
@@ -237,7 +238,7 @@ void syslog_example() {
 
 // Android example.
 #if defined(__ANDROID__)
-#include "spdlog/sinks/android_sink.h"
+    #include "spdlog/sinks/android_sink.h"
 void android_example() {
     std::string tag = "spdlog-android";
     auto android_logger = spdlog::android_logger_mt("android", tag);

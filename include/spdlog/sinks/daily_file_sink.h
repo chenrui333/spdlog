@@ -11,13 +11,12 @@
 #include <string>
 
 #include "../common.h"
-#include "./base_sink.h"
 #include "../details/circular_q.h"
 #include "../details/file_helper.h"
 #include "../details/null_mutex.h"
 #include "../details/os.h"
 #include "../details/synchronous_factory.h"
-
+#include "./base_sink.h"
 
 namespace spdlog {
 namespace sinks {
@@ -25,21 +24,21 @@ namespace sinks {
 /*
  * Generator of daily log file names in format basename_YYYY-MM-DD.ext
  */
-struct daily_filename_calculator {    
+struct daily_filename_calculator {
     static filename_t calc_filename(const filename_t &filename, const tm &now_tm) {
         filename_t basename, ext;
         std::tie(basename, ext) = details::os::split_by_extension(filename);
-        std::basic_ostringstream<filename_t::value_type> oss;        
+        std::basic_ostringstream<filename_t::value_type> oss;
         oss << basename.native() << '_' << std::setfill(SPDLOG_FILENAME_T('0')) << std::setw(4) << now_tm.tm_year + 1900 << '-'
             << std::setw(2) << now_tm.tm_mon + 1 << '-' << std::setw(2) << now_tm.tm_mday << ext.native();
-        return oss.str();        
+        return oss.str();
     }
 };
 
 /*
  * Generator of daily log file names with strftime format.
  * Usages:
- *    
+ *
  * std::make_shared<spdlog::sinks::daily_file_format_sink_mt>("myapp-%Y-%m-%d:%H:%M:%S.log", hour,  minute);
  * or
  * spdlog::daily_logger_format_mt("loggername, "myapp-%Y-%m-%d:%X.log", hour,  minute)"

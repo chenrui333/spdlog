@@ -75,8 +75,6 @@ bool fopen_s(FILE **fp, const filename_t &filename, const filename_t &mode) {
     return *fp == nullptr;
 }
 
-
-
 #ifdef _MSC_VER
 // avoid warning about unreachable statement at the end of filesize()
     #pragma warning(push)
@@ -155,11 +153,9 @@ std::string filename_to_str(const filename_t &filename) {
         memory_buf_t buf;
         wstr_to_utf8buf(filename.wstring(), buf);
         return std::string(buf.data(), buf.size());
+    } catch (...) {
+        return "???";
     }
-    catch (...) {
-		return "???";
-	}
-
 }
 
 int pid() noexcept { return static_cast<int>(::GetCurrentProcessId()); }
@@ -223,7 +219,6 @@ void utf8_to_wstrbuf(string_view_t str, wmemory_buf_t &target) {
 
     throw_spdlog_ex(fmt_lib::format("MultiByteToWideChar failed. Last error: {}", ::GetLastError()));
 }
-
 
 std::string getenv(const char *field) {
 #if defined(_MSC_VER)

@@ -1,13 +1,13 @@
 // Copyright(c) 2015-present, Gabi Melman & spdlog contributors.
 // Distributed under the MIT License (http://opensource.org/licenses/MIT)
 
+#include "spdlog/details/file_helper.h"
 
 #include <cerrno>
 #include <cstdio>
-#include <utility>
 #include <filesystem>
+#include <utility>
 
-#include "spdlog/details/file_helper.h"
 #include "spdlog/common.h"
 #include "spdlog/details/os.h"
 
@@ -109,7 +109,6 @@ size_t file_helper::size() const {
 }
 
 const filename_t &file_helper::filename() const { return filename_; }
-
 
 }  // namespace details
 }  // namespace spdlog

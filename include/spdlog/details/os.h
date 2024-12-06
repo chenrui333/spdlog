@@ -5,6 +5,7 @@
 
 #include <ctime>  // std::time_t
 #include <tuple>
+
 #include "../common.h"
 #include "../filename_t.h"
 
@@ -66,7 +67,6 @@ SPDLOG_API void wstr_to_utf8buf(wstring_view_t wstr, memory_buf_t &target);
 SPDLOG_API void utf8_to_wstrbuf(string_view_t str, wmemory_buf_t &target);
 #endif
 
-
 // non thread safe, cross platform getenv/getenv_s
 // return empty string if field not found
 SPDLOG_API std::string getenv(const char *field);
@@ -106,7 +106,6 @@ SPDLOG_API bool rename(const filename_t &filename1, const filename_t &filename2)
 // Return if file exists.
 SPDLOG_API bool path_exists(const filename_t &filename) noexcept;
 
-
 // Return file path and its extension:
 //
 // "mylog.txt" => ("mylog", ".txt")
@@ -123,7 +122,6 @@ SPDLOG_API std::tuple<filename_t, filename_t> split_by_extension(const filename_
 
 // Try tp convert filename to string. Return "??" if failed
 SPDLOG_API std::string filename_to_str(const filename_t &filename);
-
 
 }  // namespace os
 }  // namespace details

@@ -43,8 +43,8 @@ TEST_CASE("create_invalid_dir", "[create_dir]") {
 }
 
 TEST_CASE("dir_name", "[create_dir]") {
-    using spdlog::details::os::dir_name;    
-#ifdef WIN32    
+    using spdlog::details::os::dir_name;
+#ifdef WIN32
     REQUIRE(dir_name(SPDLOG_FILENAME_T(R"(dir\)")) == SPDLOG_FILENAME_T("dir"));
     REQUIRE(dir_name(SPDLOG_FILENAME_T(R"(dir\\\)")) == SPDLOG_FILENAME_T(R"(dir)"));
     REQUIRE(dir_name(SPDLOG_FILENAME_T(R"(dir\file)")) == SPDLOG_FILENAME_T("dir"));
@@ -60,19 +60,19 @@ TEST_CASE("dir_name", "[create_dir]") {
     REQUIRE(dir_name(SPDLOG_FILENAME_T(R"(c://a/b/c/d/file.txt)")) == SPDLOG_FILENAME_T(R"(c://a/b/c/d)"));
 #endif
     REQUIRE(dir_name(SPDLOG_FILENAME_T("")).empty());
-    REQUIRE(dir_name(SPDLOG_FILENAME_T("dir")).empty());    
+    REQUIRE(dir_name(SPDLOG_FILENAME_T("dir")).empty());
     REQUIRE(dir_name(SPDLOG_FILENAME_T("dir/")) == SPDLOG_FILENAME_T("dir"));
     REQUIRE(dir_name(SPDLOG_FILENAME_T("dir///")) == SPDLOG_FILENAME_T("dir"));
     REQUIRE(dir_name(SPDLOG_FILENAME_T("dir/file")) == SPDLOG_FILENAME_T("dir"));
     REQUIRE(dir_name(SPDLOG_FILENAME_T("dir/file.txt")) == SPDLOG_FILENAME_T("dir"));
     REQUIRE(dir_name(SPDLOG_FILENAME_T("dir/file.txt/")) == SPDLOG_FILENAME_T("dir/file.txt"));
-    REQUIRE(dir_name(SPDLOG_FILENAME_T("/dir/file.txt")) == SPDLOG_FILENAME_T("/dir"));    
+    REQUIRE(dir_name(SPDLOG_FILENAME_T("/dir/file.txt")) == SPDLOG_FILENAME_T("/dir"));
     REQUIRE(dir_name(SPDLOG_FILENAME_T("../file.txt")) == SPDLOG_FILENAME_T(".."));
     REQUIRE(dir_name(SPDLOG_FILENAME_T("./file.txt")) == SPDLOG_FILENAME_T("."));
 
-#ifdef _WIN32    
+#ifdef _WIN32
     REQUIRE(dir_name(SPDLOG_FILENAME_T("//dir/file.txt")) == SPDLOG_FILENAME_T("//dir/"));
-#else 
+#else
     REQUIRE(dir_name(SPDLOG_FILENAME_T("//dir/file.txt")) == SPDLOG_FILENAME_T("//dir"));
 #endif
 }

@@ -88,7 +88,6 @@ TEST_CASE("flush", "[async]") {
     REQUIRE(test_sink->flush_counter() == 1);
 }
 
-
 TEST_CASE("tp->wait_empty() ", "[async]") {
     auto test_sink = std::make_shared<spdlog::sinks::test_sink_mt>();
     test_sink->set_delay(std::chrono::milliseconds(5));

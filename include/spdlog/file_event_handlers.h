@@ -1,6 +1,7 @@
 #pragma once
 
 #include <functional>
+
 #include "./filename_t.h"
 
 namespace spdlog {

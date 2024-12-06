@@ -99,7 +99,6 @@ bool fopen_s(FILE **fp, const filename_t &filename, const filename_t &mode) {
     return *fp == nullptr;
 }
 
-
 // Return file size according to open FILE* object
 size_t filesize(FILE *f) {
     if (f == nullptr) {
@@ -231,9 +230,9 @@ void sleep_for_millis(unsigned int milliseconds) noexcept {
     std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
 }
 
-std::string filename_to_str(const filename_t &filename) { 
+std::string filename_to_str(const filename_t &filename) {
     static_assert(std::is_same_v<filename_t::value_type, char>, "filename_t type must be char");
-    return filename; 
+    return filename;
 }
 
 int pid() noexcept { return static_cast<int>(::getpid()); }

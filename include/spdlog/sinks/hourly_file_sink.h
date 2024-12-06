@@ -48,9 +48,9 @@ class hourly_file_sink final : public base_sink<Mutex> {
 public:
     // create hourly file sink which rotates on given time
     explicit hourly_file_sink(filename_t base_filename,
-                     bool truncate = false,
-                     uint16_t max_files = 0,
-                     const file_event_handlers &event_handlers = {})
+                              bool truncate = false,
+                              uint16_t max_files = 0,
+                              const file_event_handlers &event_handlers = {})
         : base_filename_(std::move(base_filename)),
           file_helper_{event_handlers},
           truncate_(truncate),

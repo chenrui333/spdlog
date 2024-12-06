@@ -44,7 +44,6 @@ TEST_CASE("custom_error_handler", "[errors]") {
 }
 
 TEST_CASE("default_error_handler2", "[errors]") {
-
     auto logger = std::make_shared<spdlog::logger>("failed_logger", std::make_shared<failing_sink>());
     logger->set_error_handler([=](const std::string &) { throw custom_ex(); });
     REQUIRE_THROWS_AS(logger->info("Some message"), custom_ex);

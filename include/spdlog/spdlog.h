@@ -53,7 +53,6 @@ SPDLOG_API bool should_log(level level);
 // Set flush level of the global logger.
 SPDLOG_API void flush_on(level level);
 
-
 // Set error handler for the global logger
 SPDLOG_API void set_error_handler(void (*handler)(const std::string &msg));
 
