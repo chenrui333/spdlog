@@ -29,26 +29,25 @@ public:
     context(const context &) = delete;
     context &operator=(const context &) = delete;
 
-    std::shared_ptr<logger> global_logger();
+    [[nodiscard]] std::shared_ptr<logger> global_logger();
 
     // Return raw ptr to the global logger.
     // To be used directly by the spdlog global api (e.g. spdlog::info)
     // This make the global API faster, but cannot be used concurrently with set_global_logger().
     // e.g do not call set_global_logger() from one thread while calling spdlog::info() from
     // another.
-    logger *global_logger_raw() const noexcept;
+    [[nodiscard]] logger *global_logger_raw() const noexcept;
 
     // set logger instance.
     void set_logger(std::shared_ptr<logger> new_logger);
 
     void set_tp(std::shared_ptr<thread_pool> tp);
 
-    std::shared_ptr<thread_pool> get_tp();
+    [[nodiscard]] std::shared_ptr<thread_pool> get_tp();
 
     // clean all resources
     void shutdown();
-    std::recursive_mutex &tp_mutex();
-
+    [[nodiscard]] std::recursive_mutex &tp_mutex();
 
 private:
     std::recursive_mutex tp_mutex_;
