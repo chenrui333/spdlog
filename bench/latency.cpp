@@ -71,11 +71,9 @@ void bench_disabled_macro_global_logger(benchmark::State &state, std::shared_ptr
 void bench_dev_null() {
     auto dev_null_st = spdlog::basic_logger_st("/dev/null_st", "/dev/null");
     benchmark::RegisterBenchmark("/dev/null_st", bench_logger, std::move(dev_null_st))->UseRealTime();
-    spdlog::drop("/dev/null_st");
 
     auto dev_null_mt = spdlog::basic_logger_mt("/dev/null_mt", "/dev/null");
     benchmark::RegisterBenchmark("/dev/null_mt", bench_logger, std::move(dev_null_mt))->UseRealTime();
-    spdlog::drop("/dev/null_mt");
 }
 
 #endif  // __linux__
@@ -84,48 +82,12 @@ void bench_dev_null() {
 // for this test we create multiple null loggers and then call spdlog::get() on one of them multiple times
 // create multiple null loggers and return name of the one to test
 static std::string prepare_null_loggers() {
-    spdlog::drop_all();
     const std::string some_logger_name = "Some logger name";
     const int null_logger_count = 9;
     for (int i = 0; i < null_logger_count; i++) {
         spdlog::create<spdlog::sinks::null_sink_mt>(some_logger_name + std::to_string(i));
     }
     return some_logger_name + std::to_string(null_logger_count / 2);
-}
-
-// benchmark spdlog::get() with const char*
-void bench_get_logger_const_char(benchmark::State &state) {
-    std::string str_name = prepare_null_loggers();
-    const char *name = str_name.c_str();
-    for (auto _ : state) {
-        auto rv = spdlog::get(name);
-        if (rv == nullptr) {
-            state.SkipWithError("get() returned nullptr");
-        }
-    }
-}
-
-// benchmark spdlog::get() with std::string_view
-void bench_get_logger_sv(benchmark::State &state) {
-    auto str_name = prepare_null_loggers();
-    auto sv_name = std::string_view{str_name};
-    for (auto _ : state) {
-        auto rv = spdlog::get(sv_name);
-        if (rv == nullptr) {
-            state.SkipWithError("get() returned nullptr");
-        }
-    }
-}
-
-// benchmark spdlog::get() with std::string
-void bench_get_logger_string(benchmark::State &state) {
-    auto str_name = prepare_null_loggers();
-    for (auto _ : state) {
-        auto rv = spdlog::get(str_name);
-        if (rv == nullptr) {
-            state.SkipWithError("get() returned nullptr");
-        }
-    }
 }
 
 int main(int argc, char *argv[]) {
@@ -159,17 +121,14 @@ int main(int argc, char *argv[]) {
         // basic_st
         auto basic_st = spdlog::basic_logger_st("basic_st", "latency_logs/basic_st.log", true);
         benchmark::RegisterBenchmark("basic_st", bench_logger, std::move(basic_st))->UseRealTime();
-        spdlog::drop("basic_st");
 
         // rotating st
         auto rotating_st = spdlog::rotating_logger_st("rotating_st", "latency_logs/rotating_st.log", file_size, rotating_files);
         benchmark::RegisterBenchmark("rotating_st", bench_logger, std::move(rotating_st))->UseRealTime();
-        spdlog::drop("rotating_st");
 
         // daily st
         auto daily_st = spdlog::daily_logger_mt("daily_st", "latency_logs/daily_st.log");
         benchmark::RegisterBenchmark("daily_st", bench_logger, std::move(daily_st))->UseRealTime();
-        spdlog::drop("daily_st");
 
         //
         // Multi threaded bench, 10 loggers using same logger concurrently
@@ -180,17 +139,14 @@ int main(int argc, char *argv[]) {
         // basic_mt
         auto basic_mt = spdlog::basic_logger_mt("basic_mt", "latency_logs/basic_mt.log", true);
         benchmark::RegisterBenchmark("basic_mt", bench_logger, std::move(basic_mt))->Threads(n_threads)->UseRealTime();
-        spdlog::drop("basic_mt");
 
         // rotating mt
         auto rotating_mt = spdlog::rotating_logger_mt("rotating_mt", "latency_logs/rotating_mt.log", file_size, rotating_files);
         benchmark::RegisterBenchmark("rotating_mt", bench_logger, std::move(rotating_mt))->Threads(n_threads)->UseRealTime();
-        spdlog::drop("rotating_mt");
 
         // daily mt
         auto daily_mt = spdlog::daily_logger_mt("daily_mt", "latency_logs/daily_mt.log");
         benchmark::RegisterBenchmark("daily_mt", bench_logger, std::move(daily_mt))->Threads(n_threads)->UseRealTime();
-        spdlog::drop("daily_mt");
     }
 
     // async
@@ -199,10 +155,6 @@ int main(int argc, char *argv[]) {
     auto async_logger = std::make_shared<spdlog::async_logger>("async_logger", std::make_shared<null_sink_mt>(), std::move(tp),
                                                                spdlog::async_overflow_policy::overrun_oldest);
     benchmark::RegisterBenchmark("async_logger", bench_logger, async_logger)->Threads(n_threads)->UseRealTime();
-
-    benchmark::RegisterBenchmark("spdlog::get(const char* name)", bench_get_logger_const_char);
-    benchmark::RegisterBenchmark("spdlog::get(std::string_view name)", bench_get_logger_sv);
-    benchmark::RegisterBenchmark("spdlog::get(const std::string &name)", bench_get_logger_string);
 
     benchmark::Initialize(&argc, argv);
     benchmark::RunSpecifiedBenchmarks();

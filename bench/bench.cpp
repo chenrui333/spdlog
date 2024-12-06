@@ -77,7 +77,6 @@ void bench_single_threaded(int iters) {
 }
 
 int main(int argc, char *argv[]) {
-    spdlog::set_automatic_registration(false);
     spdlog::global_logger()->set_pattern("[%^%l%$] %v");
     int iters = 250000;
     size_t threads = 4;
@@ -118,7 +117,6 @@ void bench(int howmany, std::shared_ptr<spdlog::logger> log) {
 
     spdlog::info(spdlog::fmt_lib::format(std::locale("en_US.UTF-8"), "{:<30} Elapsed: {:0.2f} secs {:>16L}/sec", log->name(),
                                          delta_d, size_t(howmany / delta_d)));
-    spdlog::drop(log->name());
 }
 
 void bench_mt(int howmany, std::shared_ptr<spdlog::logger> log, size_t thread_count) {
@@ -145,7 +143,6 @@ void bench_mt(int howmany, std::shared_ptr<spdlog::logger> log, size_t thread_co
     auto delta_d = duration_cast<duration<double>>(delta).count();
     spdlog::info(spdlog::fmt_lib::format(std::locale("en_US.UTF-8"), "{:<30} Elapsed: {:0.2f} secs {:>16L}/sec", log->name(),
                                          delta_d, size_t(howmany / delta_d)));
-    spdlog::drop(log->name());
 }
 
 /*
