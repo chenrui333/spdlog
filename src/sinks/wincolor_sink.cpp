@@ -122,6 +122,9 @@ void wincolor_sink<Mutex>::write_to_file_(const memory_buf_t &formatted) {
 }
 
 // template instantiations
+template class SPDLOG_API wincolor_stdout_sink<std::mutex>;
+template class SPDLOG_API wincolor_stdout_sink<details::null_mutex>;
+
 template <typename Mutex>
 wincolor_stdout_sink<Mutex>::wincolor_stdout_sink(color_mode mode)
     : wincolor_sink<Mutex>(::GetStdHandle(STD_OUTPUT_HANDLE), mode) {}
