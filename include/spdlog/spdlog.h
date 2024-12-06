@@ -77,20 +77,26 @@ SPDLOG_API std::shared_ptr<logger> global_logger();
 // Set the global logger. (for example, to replace the global logger with a custom logger)
 SPDLOG_API void set_global_logger(std::shared_ptr<logger> global_logger);
 
+// Return the global logger raw pointer.
+// To be used directly by the spdlog default API (e.g. spdlog::info)
+// This make the default API faster, but cannot be used concurrently with set_global_logger().
+// e.g do not call set_global_logger() from one thread while calling spdlog::info() from another.
+SPDLOG_API logger *global_logger_raw() noexcept;
+
 
 template <typename... Args>
 void log(source_loc source, level lvl, format_string_t<Args...> fmt, Args &&...args) {
-    global_logger()->log(source, lvl, fmt, std::forward<Args>(args)...);
+    global_logger_raw()->log(source, lvl, fmt, std::forward<Args>(args)...);
 }
 
 template <typename... Args>
 void log(level lvl, format_string_t<Args...> fmt, Args &&...args) {
-    global_logger()->log(lvl, fmt, std::forward<Args>(args)...);
+    global_logger_raw()->log(lvl, fmt, std::forward<Args>(args)...);
 }
 
-inline void log(level lvl, std::string_view msg) { global_logger()->log(lvl, msg); }
+inline void log(level lvl, std::string_view msg) { global_logger_raw()->log(lvl, msg); }
 
-inline void log(source_loc loc, level lvl, std::string_view msg) { global_logger()->log(loc, lvl, msg); }
+inline void log(source_loc loc, level lvl, std::string_view msg) { global_logger_raw()->log(loc, lvl, msg); }
 
 template <typename... Args>
 void trace(format_string_t<Args...> fmt, Args &&...args) {

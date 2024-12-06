@@ -26,6 +26,8 @@ void set_global_logger(std::shared_ptr<logger> global_logger) {
     context()->set_logger(std::move(global_logger));
 }
 
+logger *global_logger_raw() noexcept { return context_ref()->global_logger_raw(); }
+
 void set_formatter(std::unique_ptr<formatter> formatter) {
     global_logger()->set_formatter(std::move(formatter));
 }
