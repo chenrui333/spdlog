@@ -121,6 +121,7 @@ struct fmt::formatter<spdlog::details::dump_info<T>, char> {
                         show_ascii = true;
                     }
                     break;
+                default:;
             }
 
             ++it;

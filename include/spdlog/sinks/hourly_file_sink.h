@@ -28,11 +28,11 @@ struct hourly_filename_calculator {
     static filename_t calc_filename(const filename_t &filename, const tm &now_tm) {
         filename_t basename, ext;
         std::tie(basename, ext) = details::os::split_by_extension(filename);
-        std::basic_ostringstream<filename_t::value_type> oss;        
+        std::basic_ostringstream<filename_t::value_type> oss;
         oss << basename.native() << '_' << std::setfill(SPDLOG_FILENAME_T('0')) << std::setw(4) << now_tm.tm_year + 1900 << '-'
             << std::setw(2) << now_tm.tm_mon + 1 << '-' << std::setw(2) << now_tm.tm_mday << '_' << std::setw(2) << now_tm.tm_hour
             << ext.native();
-        return oss.str();        
+        return oss.str();
     }
 };
 
@@ -47,7 +47,7 @@ template <typename Mutex, typename FileNameCalc = hourly_filename_calculator>
 class hourly_file_sink final : public base_sink<Mutex> {
 public:
     // create hourly file sink which rotates on given time
-    hourly_file_sink(filename_t base_filename,
+    explicit hourly_file_sink(filename_t base_filename,
                      bool truncate = false,
                      uint16_t max_files = 0,
                      const file_event_handlers &event_handlers = {})

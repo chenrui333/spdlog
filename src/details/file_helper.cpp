@@ -29,9 +29,11 @@ void file_helper::open(const filename_t &fname, bool truncate) {
     if (event_handlers_.before_open) {
         event_handlers_.before_open(filename_);
     }
+
+    // create containing folder if not exists already.
+    os::create_dir(os::dir_name(fname));
+
     for (int tries = 0; tries < open_tries_; ++tries) {
-        // create containing folder if not exists already.
-        os::create_dir(os::dir_name(fname));
         if (truncate) {
             // Truncate by opening-and-closing a tmp file in "wb" mode, always
             // opening the actual log-we-write-to in "ab" mode, since that

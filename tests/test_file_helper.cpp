@@ -9,7 +9,7 @@
 
 using spdlog::details::file_helper;
 
-static void write_with_helper(file_helper &helper, size_t howmany) {
+static void write_with_helper(const file_helper &helper, size_t howmany) {
     spdlog::memory_buf_t formatted;
     spdlog::fmt_lib::format_to(std::back_inserter(formatted), "{}", std::string(howmany, '1'));
     helper.write(formatted);
