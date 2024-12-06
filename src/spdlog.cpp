@@ -32,8 +32,9 @@ void set_global_logger(std::shared_ptr<logger> global_logger) {
 }
 
 logger *global_logger_raw() noexcept {
-    assert(context_ref()->global_logger_raw() != nullptr);
-    return context_ref()->global_logger_raw();
+    auto *rv = context_ref()->global_logger_raw();
+    assert(rv != nullptr);
+    return rv;
 }
 
 void set_formatter(std::unique_ptr<formatter> formatter) {
