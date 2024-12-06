@@ -2,8 +2,8 @@
 // Distributed under the MIT License (http://opensource.org/licenses/MIT)
 
 #pragma once
+#include "../details/context.h"
 #include "../details/os.h"
-#include "../details/registry.h"
 #include "./helpers.h"
 
 //

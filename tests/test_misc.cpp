@@ -73,18 +73,6 @@ TEST_CASE("to_level_enum", "[convert_to_level_enum]") {
     REQUIRE(spdlog::level_from_str("null") == spdlog::level::off);
 }
 
-TEST_CASE("periodic flush", "[periodic_flush]") {
-    using spdlog::sinks::test_sink_mt;
-    auto logger = spdlog::create<test_sink_mt>("periodic_flush");
-    auto test_sink = std::static_pointer_cast<test_sink_mt>(logger->sinks()[0]);
-
-    spdlog::flush_every(std::chrono::seconds(1));
-    std::this_thread::sleep_for(std::chrono::milliseconds(1250));
-    REQUIRE(test_sink->flush_counter() == 1);
-    spdlog::flush_every(std::chrono::seconds(0));
-    spdlog::drop_all();
-}
-
 TEST_CASE("clone-logger", "[clone]") {
     using spdlog::sinks::test_sink_mt;
     auto test_sink = std::make_shared<test_sink_mt>();

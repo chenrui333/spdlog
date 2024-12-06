@@ -73,10 +73,6 @@ int main(int, char *[]) {
         file_events_example();
         replace_default_logger_example();
 
-        // Flush all *registered* loggers using a worker thread every 3 seconds.
-        // note: registered loggers *must* be thread safe for this to work correctly!
-        spdlog::flush_every(std::chrono::seconds(3));
-
         // Apply some function on all registered loggers
         spdlog::apply_all([&](std::shared_ptr<spdlog::logger> l) { l->info("End of example."); });
 
@@ -192,10 +188,6 @@ void trace_example() {
     SPDLOG_TRACE("Some trace message.. {} ,{}", 1, 3.23);
     // debug from default logger
     SPDLOG_DEBUG("Some debug message.. {} ,{}", 1, 3.23);
-
-    // trace from logger object
-    auto logger = spdlog::get("file_logger");
-    SPDLOG_LOGGER_TRACE(logger, "another trace message");
 }
 
 // stopwatch example

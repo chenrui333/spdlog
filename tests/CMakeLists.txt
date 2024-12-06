@@ -34,8 +34,7 @@ set(SPDLOG_UTESTS_SOURCES
     test_misc.cpp
     test_pattern_formatter.cpp
     test_async.cpp
-    test_registry.cpp
-    test_macros.cpp
+        test_macros.cpp
     utils.cpp
     main.cpp
     test_mpmc_q.cpp

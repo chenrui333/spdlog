@@ -162,7 +162,7 @@ set(SPDLOG_HEADERS
     "include/spdlog/details/null_mutex.h"
     "include/spdlog/details/os.h"
     "include/spdlog/details/periodic_worker.h"
-    "include/spdlog/details/registry.h"
+    "include/spdlog/details/context.h"
     "include/spdlog/details/synchronous_factory.h"
     "include/spdlog/details/thread_pool.h"
     "include/spdlog/fmt/bin_to_hex.h"
@@ -203,7 +203,7 @@ set(SPDLOG_SRCS
     "src/details/log_msg.cpp"
     "src/details/log_msg_buffer.cpp"
     "src/details/periodic_worker.cpp"
-    "src/details/registry.cpp"
+    "src/details/context.cpp"
     "src/details/thread_pool.cpp"
     "src/sinks/base_sink.cpp"
     "src/sinks/basic_file_sink.cpp"
@@ -309,7 +309,7 @@ endif()
 # ---------------------------------------------------------------------------------------
 # spdlog private defines according to the options
 # ---------------------------------------------------------------------------------------
-foreach(SPDLOG_OPTION 
+foreach(SPDLOG_OPTION
     SPDLOG_CLOCK_COARSE
     SPDLOG_PREVENT_CHILD_FD
     SPDLOG_NO_THREAD_ID

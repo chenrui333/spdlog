@@ -1,9 +1,8 @@
 // Copyright(c) 2015-present, Gabi Melman & spdlog contributors.
 // Distributed under the MIT License (http://opensource.org/licenses/MIT)
 
-#include "spdlog/details/registry.h"
-
 #include "spdlog/common.h"
+#include "spdlog/details/context.h"
 #include "spdlog/logger.h"
 #include "spdlog/pattern_formatter.h"
 
@@ -27,7 +26,7 @@ static constexpr size_t small_map_threshold = 10;
 namespace spdlog {
 namespace details {
 
-registry::registry()
+context::context()
     : formatter_(new pattern_formatter()) {
 #ifndef SPDLOG_DISABLE_DEFAULT_LOGGER
     // create default logger (ansicolor_stdout_sink_mt or wincolor_stdout_sink_mt in windows).
@@ -43,14 +42,9 @@ registry::registry()
 #endif  // SPDLOG_DISABLE_DEFAULT_LOGGER
 }
 
-registry::~registry() = default;
+context::~context() = default;
 
-void registry::register_logger(std::shared_ptr<logger> new_logger) {
-    std::lock_guard<std::mutex> lock(logger_map_mutex_);
-    register_logger_(std::move(new_logger));
-}
-
-void registry::initialize_logger(std::shared_ptr<logger> new_logger) {
+void context::initialize_logger(std::shared_ptr<logger> new_logger) {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
     new_logger->set_formatter(formatter_->clone());
 
@@ -70,41 +64,7 @@ void registry::initialize_logger(std::shared_ptr<logger> new_logger) {
     }
 }
 
-// if the map is small do a sequential search, otherwise use the standard find()
-std::shared_ptr<logger> registry::get(const std::string &logger_name) {
-    std::lock_guard<std::mutex> lock(logger_map_mutex_);
-    if (loggers_.size() <= small_map_threshold) {
-        for (const auto &[key, val] : loggers_) {
-            if (logger_name == key) {
-                return val;
-            }
-        }
-        return nullptr;
-    }
-    auto found = loggers_.find(logger_name);
-    return found == loggers_.end() ? nullptr : found->second;
-}
-
-// if the map is small do a sequential search and avoid creating string for find(logger_name)
-// otherwise use the standard find()
-std::shared_ptr<logger> registry::get(std::string_view logger_name) {
-    std::lock_guard<std::mutex> lock(logger_map_mutex_);
-    if (loggers_.size() <= small_map_threshold) {
-        for (const auto &[key, val] : loggers_) {
-            if (logger_name == key) {
-                return val;
-            }
-        }
-        return nullptr;
-    }
-    // otherwise use the normal map lookup
-    const auto found = loggers_.find(std::string(logger_name));
-    return found == loggers_.end() ? nullptr : found->second;
-}
-
-std::shared_ptr<logger> registry::get(const char *logger_name) { return get(std::string_view(logger_name)); }
-
-std::shared_ptr<logger> registry::default_logger() {
+std::shared_ptr<logger> context::default_logger() {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
     return default_logger_;
 }
@@ -113,11 +73,11 @@ std::shared_ptr<logger> registry::default_logger() {
 // To be used directly by the spdlog default api (e.g. spdlog::info)
 // This make the default API faster, but cannot be used concurrently with set_default_logger().
 // e.g do not call set_default_logger() from one thread while calling spdlog::info() from another.
-logger *registry::get_default_raw() const { return default_logger_.get(); }
+logger *context::get_default_raw() const { return default_logger_.get(); }
 
 // set default logger.
 // default logger is stored in default_logger_ (for faster retrieval) and in the loggers_ map.
-void registry::set_default_logger(std::shared_ptr<logger> new_default_logger) {
+void context::set_default_logger(std::shared_ptr<logger> new_default_logger) {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
     if (new_default_logger != nullptr) {
         loggers_[new_default_logger->name()] = new_default_logger;
@@ -125,18 +85,18 @@ void registry::set_default_logger(std::shared_ptr<logger> new_default_logger) {
     default_logger_ = std::move(new_default_logger);
 }
 
-void registry::set_tp(std::shared_ptr<thread_pool> tp) {
+void context::set_tp(std::shared_ptr<thread_pool> tp) {
     std::lock_guard<std::recursive_mutex> lock(tp_mutex_);
     tp_ = std::move(tp);
 }
 
-std::shared_ptr<thread_pool> registry::get_tp() {
+std::shared_ptr<thread_pool> context::get_tp() {
     std::lock_guard<std::recursive_mutex> lock(tp_mutex_);
     return tp_;
 }
 
 // Set global formatter. Each sink in each logger will get a clone of this object
-void registry::set_formatter(std::unique_ptr<formatter> formatter) {
+void context::set_formatter(std::unique_ptr<formatter> formatter) {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
     formatter_ = std::move(formatter);
     for (auto &l : loggers_) {
@@ -144,7 +104,7 @@ void registry::set_formatter(std::unique_ptr<formatter> formatter) {
     }
 }
 
-void registry::set_level(level level) {
+void context::set_level(level level) {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
     for (auto &l : loggers_) {
         l.second->set_level(level);
@@ -152,7 +112,7 @@ void registry::set_level(level level) {
     global_log_level_ = level;
 }
 
-void registry::flush_on(level level) {
+void context::flush_on(level level) {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
     for (auto &l : loggers_) {
         l.second->flush_on(level);
@@ -160,7 +120,7 @@ void registry::flush_on(level level) {
     flush_level_ = level;
 }
 
-void registry::set_error_handler(err_handler handler) {
+void context::set_error_handler(err_handler handler) {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
     for (auto &l : loggers_) {
         l.second->set_error_handler(handler);
@@ -168,21 +128,21 @@ void registry::set_error_handler(err_handler handler) {
     err_handler_ = std::move(handler);
 }
 
-void registry::apply_all(const std::function<void(const std::shared_ptr<logger>)> &fun) {
+void context::apply_all(const std::function<void(const std::shared_ptr<logger>)> &fun) {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
     for (auto &l : loggers_) {
         fun(l.second);
     }
 }
 
-void registry::flush_all() {
+void context::flush_all() {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
     for (auto &l : loggers_) {
         l.second->flush();
     }
 }
 
-void registry::drop(const std::string &logger_name) {
+void context::drop(const std::string &logger_name) {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
     auto is_default_logger = default_logger_ && default_logger_->name() == logger_name;
     loggers_.erase(logger_name);
@@ -191,14 +151,14 @@ void registry::drop(const std::string &logger_name) {
     }
 }
 
-void registry::drop_all() {
+void context::drop_all() {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
     loggers_.clear();
     default_logger_.reset();
 }
 
 // clean all resources and threads started by the registry
-void registry::shutdown() {
+void context::shutdown() {
     {
         std::lock_guard<std::mutex> lock(flusher_mutex_);
         periodic_flusher_.reset();
@@ -212,14 +172,14 @@ void registry::shutdown() {
     }
 }
 
-std::recursive_mutex &registry::tp_mutex() { return tp_mutex_; }
+std::recursive_mutex &context::tp_mutex() { return tp_mutex_; }
 
-void registry::set_automatic_registration(bool automatic_registration) {
+void context::set_automatic_registration(bool automatic_registration) {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
     automatic_registration_ = automatic_registration;
 }
 
-void registry::set_levels(log_levels levels, level *global_level) {
+void context::set_levels(log_levels levels, level *global_level) {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
     log_levels_ = std::move(levels);
     auto global_level_requested = global_level != nullptr;
@@ -235,25 +195,25 @@ void registry::set_levels(log_levels levels, level *global_level) {
     }
 }
 
-registry &registry::instance() {
-    static registry s_instance;
+context &context::instance() {
+    static context s_instance;
     return s_instance;
 }
 
-void registry::apply_logger_env_levels(std::shared_ptr<logger> new_logger) {
+void context::apply_logger_env_levels(std::shared_ptr<logger> new_logger) {
     std::lock_guard<std::mutex> lock(logger_map_mutex_);
     auto it = log_levels_.find(new_logger->name());
     auto new_level = it != log_levels_.end() ? it->second : global_log_level_;
     new_logger->set_level(new_level);
 }
 
-void registry::throw_if_exists_(const std::string &logger_name) {
+void context::throw_if_exists_(const std::string &logger_name) {
     if (loggers_.find(logger_name) != loggers_.end()) {
         throw_spdlog_ex("logger with name '" + logger_name + "' already exists");
     }
 }
 
-void registry::register_logger_(std::shared_ptr<logger> new_logger) {
+void context::register_logger_(std::shared_ptr<logger> new_logger) {
     auto logger_name = new_logger->name();
     throw_if_exists_(logger_name);
     loggers_[logger_name] = std::move(new_logger);

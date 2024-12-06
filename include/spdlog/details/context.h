@@ -25,19 +25,15 @@ class logger;
 namespace details {
 class thread_pool;
 
-class SPDLOG_API registry {
+class SPDLOG_API context {
 public:
     using log_levels = std::unordered_map<std::string, level>;
 
-    static registry &instance();
-    registry(const registry &) = delete;
-    registry &operator=(const registry &) = delete;
+    static context &instance();
+    context(const context &) = delete;
+    context &operator=(const context &) = delete;
 
-    void register_logger(std::shared_ptr<logger> new_logger);
     void initialize_logger(std::shared_ptr<logger> new_logger);
-    std::shared_ptr<logger> get(const std::string &logger_name);
-    std::shared_ptr<logger> get(std::string_view logger_name);
-    std::shared_ptr<logger> get(const char *logger_name);
     std::shared_ptr<logger> default_logger();
 
     // Return raw ptr to the default logger.
@@ -62,18 +58,6 @@ public:
 
     void flush_on(level level);
 
-    template <typename Rep, typename Period>
-    void flush_every(std::chrono::duration<Rep, Period> interval) {
-        std::lock_guard<std::mutex> lock(flusher_mutex_);
-        auto clbk = [this]() { this->flush_all(); };
-        periodic_flusher_ = std::make_unique<periodic_worker>(clbk, interval);
-    }
-
-    std::unique_ptr<periodic_worker> &get_flusher() {
-        std::lock_guard<std::mutex> lock(flusher_mutex_);
-        return periodic_flusher_;
-    }
-
     void set_error_handler(err_handler handler);
 
     void apply_all(const std::function<void(const std::shared_ptr<logger>)> &fun);
@@ -97,8 +81,8 @@ public:
     void apply_logger_env_levels(std::shared_ptr<logger> new_logger);
 
 private:
-    registry();
-    ~registry();
+    context();
+    ~context();
 
     void throw_if_exists_(const std::string &logger_name);
     void register_logger_(std::shared_ptr<logger> new_logger);
