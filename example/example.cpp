@@ -7,7 +7,6 @@
 #include <chrono>
 #include <cstdio>
 
-void load_levels_example();
 void stdout_logger_example();
 void basic_example();
 void rotating_example();
@@ -27,14 +26,10 @@ void custom_flags_example();
 void file_events_example();
 void replace_default_logger_example();
 
-#include "spdlog/cfg/env.h"  // support for loading levels from the environment variable
 #include "spdlog/spdlog.h"
 #include "spdlog/version.h"
 
 int main(int, char *[]) {
-    // Log levels can be loaded from argv/env using "SPDLOG_LEVEL"
-    load_levels_example();
-    SPDLOG_INFO("This message should be displayed..");
     spdlog::info("Welcome to spdlog version {}.{}.{} !", SPDLOG_VER_MAJOR, SPDLOG_VER_MINOR, SPDLOG_VER_PATCH);
     spdlog::warn("Easy padding in numbers like {:08d}", 12);
     spdlog::critical("Support for int: {0:d};  hex: {0:x};  oct: {0:o}; bin: {0:b}", 42);
@@ -73,10 +68,7 @@ int main(int, char *[]) {
         file_events_example();
         replace_default_logger_example();
 
-        // Apply some function on all registered loggers
-        spdlog::apply_all([&](std::shared_ptr<spdlog::logger> l) { l->info("End of example."); });
-
-        // Release all spdlog resources, and drop all loggers in the registry.
+        // Release all spdlog resources
         // This is optional (only mandatory if using windows + async log).
         spdlog::shutdown();
     }
@@ -121,17 +113,6 @@ void callback_example() {
     auto logger = spdlog::callback_logger_mt("custom_callback_logger", [](const spdlog::details::log_msg & /*msg*/) {
         // do what you need to do with msg
     });
-}
-
-void load_levels_example() {
-    // Set the log level to "info" and mylogger to "trace":
-    // SPDLOG_LEVEL=info,mylogger=trace && ./example
-    // must #include "spdlog/cfg/env.h"
-    spdlog::cfg::load_env_levels();
-    // or from command line:
-    // ./example SPDLOG_LEVEL=info,mylogger=trace
-    // #include "spdlog/cfg/argv.h" // for loading levels from argv
-    // spdlog::cfg::load_argv_levels(args, argv);
 }
 
 #include "spdlog/async.h"

@@ -90,8 +90,6 @@ TEST_CASE("clone-logger", "[clone]") {
     REQUIRE(test_sink->lines().size() == 2);
     REQUIRE(test_sink->lines()[0] == "Some message 1");
     REQUIRE(test_sink->lines()[1] == "Some message 2");
-
-    spdlog::drop_all();
 }
 
 TEST_CASE("clone async", "[clone]") {
@@ -115,8 +113,6 @@ TEST_CASE("clone async", "[clone]") {
     REQUIRE(test_sink->lines().size() == 2);
     REQUIRE(test_sink->lines()[0] == "Some message 1");
     REQUIRE(test_sink->lines()[1] == "Some message 2");
-
-    spdlog::drop_all();
 }
 
 TEST_CASE("default logger API", "[default logger]") {
@@ -150,7 +146,6 @@ TEST_CASE("default logger API", "[default logger]") {
     spdlog::set_level(spdlog::level::info);
     spdlog::debug("should not be logged");
     REQUIRE(oss.str().empty());
-    spdlog::drop_all();
     spdlog::set_pattern("%v");
 }
 

@@ -68,7 +68,6 @@ TEST_CASE("discard policy using factory ", "[async]") {
     }
 
     REQUIRE(test_sink->msg_counter() < messages);
-    spdlog::drop_all();
 }
 
 TEST_CASE("flush", "[async]") {

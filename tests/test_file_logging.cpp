@@ -12,13 +12,10 @@
 TEST_CASE("simple_file_logger", "[simple_logger]") {
     prepare_logdir();
     spdlog::filename_t filename = SPDLOG_FILENAME_T(SIMPLE_LOG);
-
-    auto logger = spdlog::create<spdlog::sinks::basic_file_sink_mt>("logger", filename);
+    auto logger = spdlog::basic_logger_mt("logger", filename);
     logger->set_pattern("%v");
-
     logger->info("Test message {}", 1);
     logger->info("Test message {}", 2);
-
     logger->flush();
     require_message_count(SIMPLE_LOG, 2);
     using spdlog::details::os::default_eol;
@@ -28,17 +25,14 @@ TEST_CASE("simple_file_logger", "[simple_logger]") {
 TEST_CASE("flush_on", "[flush_on]") {
     prepare_logdir();
     spdlog::filename_t filename = SPDLOG_FILENAME_T(SIMPLE_LOG);
-
-    auto logger = spdlog::create<spdlog::sinks::basic_file_sink_mt>("logger", filename);
+    auto logger = spdlog::basic_logger_mt("test-error", filename);
     logger->set_pattern("%v");
     logger->set_level(spdlog::level::trace);
     logger->flush_on(spdlog::level::info);
     logger->trace("Should not be flushed");
     REQUIRE(count_lines(SIMPLE_LOG) == 0);
-
     logger->info("Test message {}", 1);
     logger->info("Test message {}", 2);
-
     require_message_count(SIMPLE_LOG, 3);
     using spdlog::details::os::default_eol;
     REQUIRE(file_contents(SIMPLE_LOG) == spdlog::fmt_lib::format("Should not be flushed{}Test message 1{}Test message 2{}",
@@ -70,9 +64,6 @@ TEST_CASE("rotating_file_logger2", "[rotating_logger]") {
         for (int i = 0; i < 10; ++i) {
             logger->info("Test message {}", i);
         }
-        // drop causes the logger destructor to be called, which is required so the
-        // next logger can rename the first output file.
-        spdlog::drop(logger->name());
     }
 
     auto logger = spdlog::rotating_logger_mt("logger", basename, max_size, 2, true);

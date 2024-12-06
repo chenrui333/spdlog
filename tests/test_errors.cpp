@@ -21,8 +21,7 @@ struct custom_ex {};
 TEST_CASE("default_error_handler", "[errors]") {
     prepare_logdir();
     spdlog::filename_t filename = SPDLOG_FILENAME_T(SIMPLE_LOG);
-
-    auto logger = spdlog::create<spdlog::sinks::basic_file_sink_mt>("test-error", filename, true);
+    auto logger = spdlog::basic_logger_mt("test-error", filename);
     logger->set_pattern("%v");
     logger->info(SPDLOG_FMT_RUNTIME("Test message {} {}"), 1);
     logger->info("Test message {}", 2);
@@ -35,25 +34,23 @@ TEST_CASE("default_error_handler", "[errors]") {
 TEST_CASE("custom_error_handler", "[errors]") {
     prepare_logdir();
     spdlog::filename_t filename = SPDLOG_FILENAME_T(SIMPLE_LOG);
-    auto logger = spdlog::create<spdlog::sinks::basic_file_sink_mt>("logger", filename, true);
+    auto logger = spdlog::basic_logger_mt("test-error", filename);
     logger->flush_on(spdlog::level::info);
     logger->set_error_handler([=](const std::string &) { throw custom_ex(); });
     logger->info("Good message #1");
-
     REQUIRE_THROWS_AS(logger->info(SPDLOG_FMT_RUNTIME("Bad format msg {} {}"), "xxx"), custom_ex);
     logger->info("Good message #2");
     require_message_count(SIMPLE_LOG, 2);
 }
 
 TEST_CASE("default_error_handler2", "[errors]") {
-    spdlog::drop_all();
-    auto logger = spdlog::create<failing_sink>("failed_logger");
+
+    auto logger = std::make_shared<spdlog::logger>("failed_logger", std::make_shared<failing_sink>());
     logger->set_error_handler([=](const std::string &) { throw custom_ex(); });
     REQUIRE_THROWS_AS(logger->info("Some message"), custom_ex);
 }
 
 TEST_CASE("flush_error_handler", "[errors]") {
-    spdlog::drop_all();
     auto logger = spdlog::create<failing_sink>("failed_logger");
     logger->set_error_handler([=](const std::string &) { throw custom_ex(); });
     REQUIRE_THROWS_AS(logger->flush(), custom_ex);
@@ -77,7 +74,6 @@ TEST_CASE("async_error_handler", "[errors]") {
         logger->info("Good message #1");
         logger->info(SPDLOG_FMT_RUNTIME("Bad format msg {} {}"), "xxx");
         logger->info("Good message #2");
-        spdlog::drop("logger");  // force logger to drain the queue and shutdown
     }
     spdlog::init_thread_pool(128, 1);
     require_message_count(SIMPLE_ASYNC_LOG, 2);
@@ -98,7 +94,6 @@ TEST_CASE("async_error_handler2", "[errors]") {
             ofs << err_msg;
         });
         logger->info("Hello failure");
-        spdlog::drop("failed_logger");  // force logger to drain the queue and shutdown
     }
 
     spdlog::init_thread_pool(128, 1);

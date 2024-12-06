@@ -30,5 +30,4 @@ TEST_CASE("custom_callback_logger", "[custom_callback_logger]") {
     REQUIRE(lines[0] == ref_lines[0]);
     REQUIRE(lines[1] == ref_lines[1]);
     REQUIRE(lines[2] == ref_lines[2]);
-    spdlog::drop_all();
 }

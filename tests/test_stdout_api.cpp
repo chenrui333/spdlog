@@ -16,7 +16,6 @@ TEST_CASE("stdout_st", "[stdout]") {
     l->warn("Test stdout_st");
     l->error("Test stdout_st");
     l->critical("Test stdout_st");
-    spdlog::drop_all();
 }
 
 TEST_CASE("stderr_st", "[stderr]") {
@@ -28,7 +27,6 @@ TEST_CASE("stderr_st", "[stderr]") {
     l->warn("Test stderr_st");
     l->error("Test stderr_st");
     l->critical("Test stderr_st");
-    spdlog::drop_all();
 }
 
 TEST_CASE("stdout_mt", "[stdout]") {
@@ -54,7 +52,6 @@ TEST_CASE("stdout_color_st", "[stdout]") {
     l->warn("Test stdout_color_st");
     l->error("Test stdout_color_st");
     l->critical("Test stdout_color_st");
-    spdlog::drop_all();
 }
 
 TEST_CASE("stdout_color_mt", "[stdout]") {
@@ -67,7 +64,6 @@ TEST_CASE("stdout_color_mt", "[stdout]") {
     l->warn("Test stdout_color_mt");
     l->error("Test stdout_color_mt");
     l->critical("Test stdout_color_mt");
-    spdlog::drop_all();
 }
 
 TEST_CASE("stderr_color_st", "[stderr]") {
@@ -75,7 +71,6 @@ TEST_CASE("stderr_color_st", "[stderr]") {
     l->set_pattern("%+");
     l->set_level(spdlog::level::debug);
     l->debug("Test stderr_color_st");
-    spdlog::drop_all();
 }
 
 TEST_CASE("stderr_color_mt", "[stderr]") {
@@ -85,5 +80,4 @@ TEST_CASE("stderr_color_mt", "[stderr]") {
     l->warn("Test stderr_color_mt");
     l->error("Test stderr_color_mt");
     l->critical("Test stderr_color_mt");
-    spdlog::drop_all();
 }
