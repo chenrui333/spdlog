@@ -59,18 +59,18 @@ void context::set_default_logger(std::shared_ptr<logger> new_default_logger) {
 }
 
 void context::set_tp(std::shared_ptr<thread_pool> tp) {
-    std::lock_guard<std::recursive_mutex> lock(tp_mutex_);
+    std::lock_guard lock(tp_mutex_);
     tp_ = std::move(tp);
 }
 
 std::shared_ptr<thread_pool> context::get_tp() {
-    std::lock_guard<std::recursive_mutex> lock(tp_mutex_);
+    std::lock_guard lock(tp_mutex_);
     return tp_;
 }
 
 // clean all resources and threads started by the registry
 void context::shutdown() {
-    std::lock_guard<std::recursive_mutex> lock(tp_mutex_);
+    std::lock_guard lock(tp_mutex_);
     tp_.reset();
 }
 
