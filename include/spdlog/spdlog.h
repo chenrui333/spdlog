@@ -57,7 +57,6 @@ SPDLOG_API void set_error_handler(void (*handler)(const std::string &msg));
 // calls context::shutdown() to perform final cleanups
 SPDLOG_API void shutdown();
 
-
 // API for using global logger (stdout_color_mt),
 // e.g: spdlog::info("Message {}", 1);
 //
@@ -70,12 +69,15 @@ SPDLOG_API void shutdown();
 //
 // IMPORTANT:
 // Do not call set_global_logger() from one thread while calling spdlog::info() from another.
-
 SPDLOG_API std::shared_ptr<logger> global_logger();
 
+// Set the global logger. (for example, to replace the global logger with a custom logger)
+SPDLOG_API void set_global_logger(std::shared_ptr<logger> global_logger);
+
+
+// Return the raw pointer of the global logger
 SPDLOG_API logger *global_logger_raw();
 
-SPDLOG_API void set_global_logger(std::shared_ptr<logger> global_logger);
 
 template <typename... Args>
 void log(source_loc source, level lvl, format_string_t<Args...> fmt, Args &&...args) {
