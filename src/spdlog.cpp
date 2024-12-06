@@ -20,7 +20,7 @@ std::shared_ptr<details::context> context() {return s_context;}
 
 const std::shared_ptr<details::context> &context_ref() {return s_context;}
 
-std::shared_ptr<logger> global_logger() { return context()->global_logger(); }
+std::shared_ptr<logger> global_logger() { return context_ref()->global_logger(); }
 
 void set_global_logger(std::shared_ptr<logger> global_logger) {
     context()->set_logger(std::move(global_logger));
