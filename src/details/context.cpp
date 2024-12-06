@@ -9,9 +9,7 @@
     #ifdef _WIN32
         #include "spdlog/sinks/wincolor_sink.h"
     #else
-
         #include "spdlog/sinks/ansicolor_sink.h"
-
     #endif
 #endif  // SPDLOG_DISABLE_GLOBAL_LOGGER
 
