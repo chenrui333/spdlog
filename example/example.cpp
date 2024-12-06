@@ -238,7 +238,7 @@ void syslog_example() {
 
 // Android example.
 #if defined(__ANDROID__)
-    #include "spdlog/sinks/android_sink.h"
+#include "spdlog/sinks/android_sink.h"
 void android_example() {
     std::string tag = "spdlog-android";
     auto android_logger = spdlog::android_logger_mt("android", tag);
