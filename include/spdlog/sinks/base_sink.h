@@ -43,5 +43,6 @@ protected:
     virtual void set_pattern_(const std::string &pattern);
     virtual void set_formatter_(std::unique_ptr<spdlog::formatter> sink_formatter);
 };
+
 }  // namespace sinks
 }  // namespace spdlog

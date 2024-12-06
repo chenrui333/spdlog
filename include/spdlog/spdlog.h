@@ -15,12 +15,9 @@
 
 #include "./common.h"
 #include "./details/context.h"
-#include "./details/synchronous_factory.h"
 #include "./logger.h"
 
 namespace spdlog {
-
-using default_factory = synchronous_factory;
 
 SPDLOG_API void set_context(std::shared_ptr<details::context> context);
 SPDLOG_API std::shared_ptr<details::context> context();
@@ -31,7 +28,7 @@ SPDLOG_API const std::shared_ptr<details::context> &context_ref();
 //   spdlog::create<daily_file_sink_st>("logger_name", "dailylog_filename", 11, 59);
 template <typename Sink, typename... SinkArgs>
 std::shared_ptr<logger> create(std::string logger_name, SinkArgs &&...sink_args) {
-    return default_factory::create<Sink>(std::move(logger_name), std::forward<SinkArgs>(sink_args)...);
+    return std::make_shared<logger>(std::move(logger_name), std::make_shared<Sink>(std::forward<SinkArgs>(sink_args)...));
 }
 
 // Set formatter of the global logger. Each sink in each logger will get a clone of this object

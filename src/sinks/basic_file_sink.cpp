@@ -2,8 +2,9 @@
 // Distributed under the MIT License (http://opensource.org/licenses/MIT)
 
 #include "spdlog/sinks/basic_file_sink.h"
-
 #include "spdlog/common.h"
+#include "spdlog/details/null_mutex.h"
+#include <mutex>
 
 namespace spdlog {
 namespace sinks {
@@ -31,9 +32,9 @@ void basic_file_sink<Mutex>::flush_() {
     file_helper_.flush();
 }
 
+// template instantiations
+template class SPDLOG_API basic_file_sink<std::mutex>;
+template class SPDLOG_API basic_file_sink<details::null_mutex>;
+
 }  // namespace sinks
 }  // namespace spdlog
-
-// template instantiations
-template class SPDLOG_API spdlog::sinks::basic_file_sink<std::mutex>;
-template class SPDLOG_API spdlog::sinks::basic_file_sink<spdlog::details::null_mutex>;

@@ -110,12 +110,13 @@ template <typename Mutex>
 ansicolor_stderr_sink<Mutex>::ansicolor_stderr_sink(color_mode mode)
     : ansicolor_sink<Mutex>(stderr, mode) {}
 
-}  // namespace sinks
-}  // namespace spdlog
 
 // template instantiations
-template class SPDLOG_API spdlog::sinks::ansicolor_stdout_sink<std::mutex>;
-template class SPDLOG_API spdlog::sinks::ansicolor_stdout_sink<spdlog::details::null_mutex>;
+template class SPDLOG_API ansicolor_stdout_sink<std::mutex>;
+template class SPDLOG_API ansicolor_stdout_sink<spdlog::details::null_mutex>;
 
-template class SPDLOG_API spdlog::sinks::ansicolor_stderr_sink<std::mutex>;
-template class SPDLOG_API spdlog::sinks::ansicolor_stderr_sink<spdlog::details::null_mutex>;
+template class SPDLOG_API ansicolor_stderr_sink<std::mutex>;
+template class SPDLOG_API ansicolor_stderr_sink<spdlog::details::null_mutex>;
+
+}  // namespace sinks
+}  // namespace spdlog

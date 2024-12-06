@@ -7,7 +7,6 @@
 
 #include "../details/null_mutex.h"
 #include "../details/os.h"
-#include "../details/synchronous_factory.h"
 #include "./base_sink.h"
 #ifndef SD_JOURNAL_SUPPRESS_LOCATION
     #define SD_JOURNAL_SUPPRESS_LOCATION
@@ -90,20 +89,6 @@ protected:
 
 using systemd_sink_mt = systemd_sink<std::mutex>;
 using systemd_sink_st = systemd_sink<details::null_mutex>;
+
 }  // namespace sinks
-
-// Create and register a syslog logger
-template <typename Factory = spdlog::synchronous_factory>
-inline std::shared_ptr<logger> systemd_logger_mt(const std::string &logger_name,
-                                                 const std::string &ident = "",
-                                                 bool enable_formatting = false) {
-    return Factory::template create<sinks::systemd_sink_mt>(logger_name, ident, enable_formatting);
-}
-
-template <typename Factory = spdlog::synchronous_factory>
-inline std::shared_ptr<logger> systemd_logger_st(const std::string &logger_name,
-                                                 const std::string &ident = "",
-                                                 bool enable_formatting = false) {
-    return Factory::template create<sinks::systemd_sink_st>(logger_name, ident, enable_formatting);
-}
 }  // namespace spdlog

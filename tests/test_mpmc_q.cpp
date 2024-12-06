@@ -1,4 +1,5 @@
 #include "includes.h"
+#include "spdlog/details/mpmc_blocking_q.h"
 
 using std::chrono::milliseconds;
 using test_clock = std::chrono::high_resolution_clock;

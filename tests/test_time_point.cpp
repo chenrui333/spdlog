@@ -1,5 +1,4 @@
 #include "includes.h"
-#include "spdlog/async.h"
 #include "test_sink.h"
 
 TEST_CASE("time_point1", "[time_point log_msg]") {

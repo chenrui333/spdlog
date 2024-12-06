@@ -16,7 +16,6 @@
     #include "../details/fmt_helper.h"
     #include "../details/null_mutex.h"
     #include "../details/os.h"
-    #include "../details/synchronous_factory.h"
     #include "./base_sink.h"
 
     #if !defined(SPDLOG_ANDROID_RETRIES)
@@ -120,19 +119,6 @@ template <int BufferId = log_id::LOG_ID_MAIN>
 using android_sink_buf_st = android_sink<details::null_mutex, BufferId>;
 
 }  // namespace sinks
-
-// Create and register android syslog logger
-
-template <typename Factory = spdlog::synchronous_factory>
-inline std::shared_ptr<logger> android_logger_mt(const std::string &logger_name, const std::string &tag = "spdlog") {
-    return Factory::template create<sinks::android_sink_mt>(logger_name, tag);
-}
-
-template <typename Factory = spdlog::synchronous_factory>
-inline std::shared_ptr<logger> android_logger_st(const std::string &logger_name, const std::string &tag = "spdlog") {
-    return Factory::template create<sinks::android_sink_st>(logger_name, tag);
-}
-
 }  // namespace spdlog
 
 #endif  // __ANDROID__

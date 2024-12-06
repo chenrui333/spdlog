@@ -9,10 +9,12 @@
 #define SIMPLE_LOG "test_logs/simple_log"
 #define ROTATING_LOG "test_logs/rotating_log"
 
+using namespace spdlog::sinks;
+
 TEST_CASE("simple_file_logger", "[simple_logger]") {
     prepare_logdir();
     spdlog::filename_t filename = SPDLOG_FILENAME_T(SIMPLE_LOG);
-    auto logger = spdlog::basic_logger_mt("logger", filename);
+    auto logger = spdlog::create<basic_file_sink_mt>("test-error", filename);
     logger->set_pattern("%v");
     logger->info("Test message {}", 1);
     logger->info("Test message {}", 2);
@@ -25,7 +27,7 @@ TEST_CASE("simple_file_logger", "[simple_logger]") {
 TEST_CASE("flush_on", "[flush_on]") {
     prepare_logdir();
     spdlog::filename_t filename = SPDLOG_FILENAME_T(SIMPLE_LOG);
-    auto logger = spdlog::basic_logger_mt("test-error", filename);
+    auto logger = spdlog::create<basic_file_sink_mt>("test-error", filename);
     logger->set_pattern("%v");
     logger->set_level(spdlog::level::trace);
     logger->flush_on(spdlog::level::info);
@@ -43,8 +45,7 @@ TEST_CASE("rotating_file_logger1", "[rotating_logger]") {
     prepare_logdir();
     size_t max_size = 1024 * 10;
     spdlog::filename_t basename = SPDLOG_FILENAME_T(ROTATING_LOG);
-    auto logger = spdlog::rotating_logger_mt("logger", basename, max_size, 0);
-
+    auto logger = spdlog::create<rotating_file_sink_mt>("logger", basename, max_size, 0);
     for (int i = 0; i < 10; ++i) {
         logger->info("Test message {}", i);
     }
@@ -57,16 +58,14 @@ TEST_CASE("rotating_file_logger2", "[rotating_logger]") {
     prepare_logdir();
     size_t max_size = 1024 * 10;
     spdlog::filename_t basename = SPDLOG_FILENAME_T(ROTATING_LOG);
-
     {
         // make an initial logger to create the first output file
-        auto logger = spdlog::rotating_logger_mt("logger", basename, max_size, 2, true);
+        auto logger = spdlog::create<rotating_file_sink_mt>("logger", basename, max_size, 2, true);
         for (int i = 0; i < 10; ++i) {
             logger->info("Test message {}", i);
         }
     }
-
-    auto logger = spdlog::rotating_logger_mt("logger", basename, max_size, 2, true);
+    auto logger = spdlog::create<rotating_file_sink_mt>("logger", basename, max_size, 2, true);
     for (int i = 0; i < 10; ++i) {
         logger->info("Test message {}", i);
     }
@@ -89,7 +88,7 @@ TEST_CASE("rotating_file_logger3", "[rotating_logger]") {
     prepare_logdir();
     size_t max_size = 0;
     spdlog::filename_t basename = SPDLOG_FILENAME_T(ROTATING_LOG);
-    REQUIRE_THROWS_AS(spdlog::rotating_logger_mt("logger", basename, max_size, 0), spdlog::spdlog_ex);
+    REQUIRE_THROWS_AS(spdlog::create<rotating_file_sink_mt>("logger", basename, max_size, 0), spdlog::spdlog_ex);
 }
 
 // test on-demand rotation of logs
@@ -99,15 +98,11 @@ TEST_CASE("rotating_file_logger4", "[rotating_logger]") {
     spdlog::filename_t basename = SPDLOG_FILENAME_T(ROTATING_LOG);
     auto sink = std::make_shared<spdlog::sinks::rotating_file_sink_st>(basename, max_size, 2);
     auto logger = std::make_shared<spdlog::logger>("rotating_sink_logger", sink);
-
     logger->info("Test message - pre-rotation");
     logger->flush();
-
     sink->rotate_now();
-
     logger->info("Test message - post-rotation");
     logger->flush();
-
     REQUIRE(get_filesize(ROTATING_LOG) > 0);
     REQUIRE(get_filesize(ROTATING_LOG ".1") > 0);
 }

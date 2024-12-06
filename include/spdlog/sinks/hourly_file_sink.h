@@ -14,7 +14,6 @@
 #include "../details/file_helper.h"
 #include "../details/null_mutex.h"
 #include "../details/os.h"
-#include "../details/synchronous_factory.h"
 #include "../fmt/fmt.h"
 #include "./base_sink.h"
 
@@ -167,25 +166,4 @@ using hourly_file_sink_mt = hourly_file_sink<std::mutex>;
 using hourly_file_sink_st = hourly_file_sink<details::null_mutex>;
 
 }  // namespace sinks
-
-//
-// factory functions
-//
-template <typename Factory = spdlog::synchronous_factory>
-inline std::shared_ptr<logger> hourly_logger_mt(const std::string &logger_name,
-                                                const filename_t &filename,
-                                                bool truncate = false,
-                                                uint16_t max_files = 0,
-                                                const file_event_handlers &event_handlers = {}) {
-    return Factory::template create<sinks::hourly_file_sink_mt>(logger_name, filename, truncate, max_files, event_handlers);
-}
-
-template <typename Factory = spdlog::synchronous_factory>
-inline std::shared_ptr<logger> hourly_logger_st(const std::string &logger_name,
-                                                const filename_t &filename,
-                                                bool truncate = false,
-                                                uint16_t max_files = 0,
-                                                const file_event_handlers &event_handlers = {}) {
-    return Factory::template create<sinks::hourly_file_sink_st>(logger_name, filename, truncate, max_files, event_handlers);
-}
 }  // namespace spdlog

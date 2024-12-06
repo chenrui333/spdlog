@@ -69,7 +69,7 @@ protected:
 };
 
 using tcp_sink_mt = tcp_sink<std::mutex>;
-using tcp_sink_st = tcp_sink<spdlog::details::null_mutex>;
+using tcp_sink_st = tcp_sink<details::null_mutex>;
 
 }  // namespace sinks
 }  // namespace spdlog

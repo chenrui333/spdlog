@@ -139,8 +139,7 @@ find_package(Threads REQUIRED)
 # Library sources
 # ---------------------------------------------------------------------------------------
 set(SPDLOG_HEADERS
-    "include/spdlog/async.h"
-    "include/spdlog/async_logger.h"
+        "include/spdlog/async_logger.h"
     "include/spdlog/common.h"
     "include/spdlog/formatter.h"
     "include/spdlog/fwd.h"
@@ -160,9 +159,7 @@ set(SPDLOG_HEADERS
     "include/spdlog/details/os.h"
     "include/spdlog/details/periodic_worker.h"
     "include/spdlog/details/context.h"
-    "include/spdlog/details/synchronous_factory.h"
-    "include/spdlog/details/thread_pool.h"
-    "include/spdlog/fmt/bin_to_hex.h"
+        "include/spdlog/fmt/bin_to_hex.h"
     "include/spdlog/fmt/fmt.h"
     "include/spdlog/sinks/android_sink.h"
     "include/spdlog/sinks/base_sink.h"
@@ -189,8 +186,7 @@ set(SPDLOG_HEADERS
     "include/spdlog/sinks/udp_sink.h")
 
 set(SPDLOG_SRCS
-    "src/async_logger.cpp"
-    "src/common.cpp"
+        "src/common.cpp"
     "src/logger.cpp"
     "src/pattern_formatter.cpp"
     "src/spdlog.cpp"
@@ -199,13 +195,10 @@ set(SPDLOG_SRCS
     "src/details/log_msg.cpp"
     "src/details/log_msg_buffer.cpp"
         "src/details/context.cpp"
-    "src/details/thread_pool.cpp"
-    "src/sinks/base_sink.cpp"
+        "src/sinks/base_sink.cpp"
     "src/sinks/basic_file_sink.cpp"
     "src/sinks/rotating_file_sink.cpp"
-    "src/sinks/sink.cpp"
-    "src/sinks/stdout_color_sinks.cpp"
-    "src/sinks/stdout_sinks.cpp")
+        "src/sinks/stdout_sinks.cpp")
 
 if(WIN32)
     list(APPEND SPDLOG_SRCS

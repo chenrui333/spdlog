@@ -25,7 +25,6 @@
 
 #define SPDLOG_ACTIVE_LEVEL SPDLOG_LEVEL_DEBUG
 
-#include "spdlog/async.h"
 #include "spdlog/details/fmt_helper.h"
 #include "spdlog/pattern_formatter.h"
 #include "spdlog/sinks/null_sink.h"

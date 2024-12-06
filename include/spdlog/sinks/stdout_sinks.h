@@ -4,9 +4,9 @@
 #pragma once
 
 #include <cstdio>
+#include <mutex>
 
 #include "../details/null_mutex.h"
-#include "../details/synchronous_factory.h"
 #include "./base_sink.h"
 #include "./sink.h"
 
@@ -58,18 +58,4 @@ using stderr_sink_mt = stderr_sink<std::mutex>;
 using stderr_sink_st = stderr_sink<details::null_mutex>;
 
 }  // namespace sinks
-
-// factory methods
-template <typename Factory = spdlog::synchronous_factory>
-std::shared_ptr<logger> stdout_logger_mt(const std::string &logger_name);
-
-template <typename Factory = spdlog::synchronous_factory>
-std::shared_ptr<logger> stdout_logger_st(const std::string &logger_name);
-
-template <typename Factory = spdlog::synchronous_factory>
-std::shared_ptr<logger> stderr_logger_mt(const std::string &logger_name);
-
-template <typename Factory = spdlog::synchronous_factory>
-std::shared_ptr<logger> stderr_logger_st(const std::string &logger_name);
-
 }  // namespace spdlog

@@ -3,7 +3,6 @@
  * https://raw.githubusercontent.com/gabime/spdlog/v2.x/LICENSE
  */
 #include "includes.h"
-#include "spdlog/async.h"
 #include "spdlog/common.h"
 #include "spdlog/sinks/callback_sink.h"
 #include "test_sink.h"

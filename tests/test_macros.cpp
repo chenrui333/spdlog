@@ -15,7 +15,7 @@
 TEST_CASE("debug and trace w/o format string", "[macros]") {
     prepare_logdir();
     spdlog::filename_t filename = SPDLOG_FILENAME_T(TEST_FILENAME);
-    auto logger = spdlog::basic_logger_mt("logger", filename);
+    auto logger = spdlog::create<spdlog::sinks::basic_file_sink_mt>("logger", filename);
     logger->set_pattern("%v");
     logger->set_level(spdlog::level::trace);
 
@@ -44,7 +44,7 @@ TEST_CASE("disable param evaluation", "[macros]") {
 }
 
 TEST_CASE("pass logger pointer", "[macros]") {
-    auto logger = spdlog::null_logger_mt("refmacro");
+    auto logger = spdlog::create<spdlog::sinks::null_sink_mt>("refmacro");
     auto &ref = *logger;
     SPDLOG_LOGGER_TRACE(&ref, "Test message 1");
     SPDLOG_LOGGER_DEBUG(&ref, "Test message 2");

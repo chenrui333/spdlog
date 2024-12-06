@@ -5,53 +5,58 @@
 
 #include <memory>
 #include <mutex>
-
 #include "spdlog/common.h"
 #include "spdlog/details/null_mutex.h"
 #include "spdlog/pattern_formatter.h"
 
+namespace spdlog {
+namespace sinks {
+
 template <typename Mutex>
-spdlog::sinks::base_sink<Mutex>::base_sink()
+base_sink<Mutex>::base_sink()
     : formatter_{std::make_unique<spdlog::pattern_formatter>()} {}
 
 template <typename Mutex>
-spdlog::sinks::base_sink<Mutex>::base_sink(std::unique_ptr<spdlog::formatter> formatter)
+base_sink<Mutex>::base_sink(std::unique_ptr<spdlog::formatter> formatter)
     : formatter_{std::move(formatter)} {}
 
 template <typename Mutex>
-void spdlog::sinks::base_sink<Mutex>::log(const details::log_msg &msg) {
+void base_sink<Mutex>::log(const details::log_msg &msg) {
     std::lock_guard<Mutex> lock(mutex_);
     sink_it_(msg);
 }
 
 template <typename Mutex>
-void spdlog::sinks::base_sink<Mutex>::flush() {
+void base_sink<Mutex>::flush() {
     std::lock_guard<Mutex> lock(mutex_);
     flush_();
 }
 
 template <typename Mutex>
-void spdlog::sinks::base_sink<Mutex>::set_pattern(const std::string &pattern) {
+void base_sink<Mutex>::set_pattern(const std::string &pattern) {
     std::lock_guard<Mutex> lock(mutex_);
     set_pattern_(pattern);
 }
 
 template <typename Mutex>
-void spdlog::sinks::base_sink<Mutex>::set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) {
+void base_sink<Mutex>::set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) {
     std::lock_guard<Mutex> lock(mutex_);
     set_formatter_(std::move(sink_formatter));
 }
 
 template <typename Mutex>
-void spdlog::sinks::base_sink<Mutex>::set_pattern_(const std::string &pattern) {
-    set_formatter_(std::make_unique<spdlog::pattern_formatter>(pattern));
+void base_sink<Mutex>::set_pattern_(const std::string &pattern) {
+    set_formatter_(std::make_unique<pattern_formatter>(pattern));
 }
 
 template <typename Mutex>
-void spdlog::sinks::base_sink<Mutex>::set_formatter_(std::unique_ptr<spdlog::formatter> sink_formatter) {
+void base_sink<Mutex>::set_formatter_(std::unique_ptr<formatter> sink_formatter) {
     formatter_ = std::move(sink_formatter);
 }
 
 // template instantiations
-template class SPDLOG_API spdlog::sinks::base_sink<std::mutex>;
-template class SPDLOG_API spdlog::sinks::base_sink<spdlog::details::null_mutex>;
+template class SPDLOG_API base_sink<std::mutex>;
+template class SPDLOG_API base_sink<details::null_mutex>;
+
+} // namespace sinks
+} // namespace spdlog

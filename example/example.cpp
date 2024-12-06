@@ -29,6 +29,8 @@ void replace_global_logger_example();
 #include "spdlog/spdlog.h"
 #include "spdlog/version.h"
 
+using namespace spdlog::sinks;
+
 int main(int, char *[]) {
     spdlog::info("Welcome to spdlog version {}.{}.{} !", SPDLOG_VER_MAJOR, SPDLOG_VER_MINOR, SPDLOG_VER_PATCH);
     spdlog::warn("Easy padding in numbers like {:08d}", 12);
@@ -84,50 +86,50 @@ int main(int, char *[]) {
 // or #include "spdlog/sinks/stdout_sinks.h" if no colors needed.
 void stdout_logger_example() {
     // Create color multithreading logger.
-    auto console = spdlog::stdout_color_mt("console");
+    auto console = spdlog::create<stdout_color_sink_mt>("console");
     // or for stderr:
-    // auto console = spdlog::stderr_color_mt("error-logger");
+    //auto console = spdlog::create<stderr_color_sink_mt>("console");
 }
 
 #include "spdlog/sinks/basic_file_sink.h"
 void basic_example() {
     // Create basic file logger (not rotated).
-    auto my_logger = spdlog::basic_logger_mt("file_logger", "logs/basic-log.txt", true);
+    auto my_logger = spdlog::create<basic_file_sink_mt>("file_logger", "logs/basic-log.txt", true);
 }
 
 #include "spdlog/sinks/rotating_file_sink.h"
 void rotating_example() {
     // Create a file rotating logger with 5mb size max and 3 rotated files.
-    auto rotating_logger = spdlog::rotating_logger_mt("some_logger_name", "logs/rotating.txt", 1048576 * 5, 3);
+    auto rotating_logger = spdlog::create<rotating_file_sink_mt>("some_logger_name", "logs/rotating.txt", 1048576 * 5, 3);
 }
 
 #include "spdlog/sinks/daily_file_sink.h"
 void daily_example() {
     // Create a daily logger - a new file is created every day on 2:30am.
-    auto daily_logger = spdlog::daily_logger_mt("daily_logger", "logs/daily.txt", 2, 30);
+    auto daily_logger = spdlog::create<daily_file_format_sink_mt>("daily_logger", "logs/daily.txt", 2, 30);
 }
 
 #include "spdlog/sinks/callback_sink.h"
 void callback_example() {
     // Create the logger
-    auto logger = spdlog::callback_logger_mt("custom_callback_logger", [](const spdlog::details::log_msg & /*msg*/) {
+    auto logger = spdlog::create<callback_sink_mt>("custom_callback_logger", [](const spdlog::details::log_msg & /*msg*/) {
         // do what you need to do with msg
     });
 }
 
-#include "spdlog/async.h"
 void async_example() {
-    // Default thread pool settings can be modified *before* creating the async logger:
-    // spdlog::init_thread_pool(32768, 1); // queue with max 32k items 1 backing thread.
-    auto async_file = spdlog::basic_logger_mt<spdlog::async_factory>("async_file_logger", "logs/async_log.txt");
-    // alternatively:
-    // auto async_file =
-    // spdlog::create_async<spdlog::sinks::basic_file_sink_mt>("async_file_logger",
-    // "logs/async_log.txt");
-
-    for (int i = 1; i < 101; ++i) {
-        async_file->info("Async message #{}", i);
-    }
+    // TODO
+    // // Default thread pool settings can be modified *before* creating the async logger:
+    // // spdlog::init_thread_pool(32768, 1); // queue with max 32k items 1 backing thread.
+    // auto async_file = spdlog::basic_logger_mt<spdlog::async_factory>("async_file_logger", "logs/async_log.txt");
+    // // alternatively:
+    // // auto async_file =
+    // // spdlog::create_async<spdlog::sinks::basic_file_sink_mt>("async_file_logger",
+    // // "logs/async_log.txt");
+    //
+    // for (int i = 1; i < 101; ++i) {
+    //     async_file->info("Async message #{}", i);
+    // }
 }
 
 // Log binary data as hex.
@@ -183,19 +185,19 @@ void stopwatch_example() {
 
 #include "spdlog/sinks/udp_sink.h"
 void udp_example() {
-    spdlog::sinks::udp_sink_config cfg("127.0.0.1", 11091);
-    auto my_logger = spdlog::udp_logger_mt("udplog", cfg);
+    udp_sink_config cfg("127.0.0.1", 11091);
+    auto my_logger = spdlog::create<udp_sink_mt>("udplog", cfg);
     my_logger->set_level(spdlog::level::debug);
     my_logger->info("hello world");
 }
 
 // A logger with multiple sinks (stdout and file) - each with a different format and log level.
 void multi_sink_example() {
-    auto console_sink = std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+    auto console_sink = std::make_shared<stdout_color_sink_mt>();
     console_sink->set_level(spdlog::level::warn);
     console_sink->set_pattern("[multi_sink_example] [%^%l%$] %v");
 
-    auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>("logs/multisink.txt", true);
+    auto file_sink = std::make_shared<basic_file_sink_mt>("logs/multisink.txt", true);
     file_sink->set_level(spdlog::level::trace);
 
     spdlog::logger logger("multi_sink", {console_sink, file_sink});
@@ -231,7 +233,7 @@ void err_handler_example() {
     #include "spdlog/sinks/syslog_sink.h"
 void syslog_example() {
     std::string ident = "spdlog-example";
-    auto syslog_logger = spdlog::syslog_logger_mt("syslog", ident, LOG_PID);
+    auto syslog_logger = spdlog::create<syslog_sink_mt>("syslog", ident, 0);
     syslog_logger->warn("This is warning that will end up in syslog.");
 }
 #endif
@@ -291,7 +293,7 @@ void replace_global_logger_example() {
     // store the old logger so we don't break other examples.
     auto old_logger = spdlog::global_logger();
 
-    auto new_logger = spdlog::basic_logger_mt("new_global_logger", "logs/new-default-log.txt", true);
+    auto new_logger = spdlog::create<basic_file_sink_mt>("new_global_logger", "logs/new-default-log.txt", true);
     spdlog::set_global_logger(new_logger);
     spdlog::set_level(spdlog::level::info);
     spdlog::debug("This message should not be displayed!");
