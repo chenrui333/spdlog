@@ -69,10 +69,5 @@ void context::shutdown() {
 
 std::recursive_mutex &context::tp_mutex() { return tp_mutex_; }
 
-context &context::instance() {
-    static context s_instance;
-    return s_instance;
-}
-
 }  // namespace details
 }  // namespace spdlog

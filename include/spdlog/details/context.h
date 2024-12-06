@@ -23,7 +23,6 @@ class thread_pool;
 
 class SPDLOG_API context {
 public:
-    static context &instance();
     context();
     ~context();
     context(const context &) = delete;
