@@ -173,7 +173,6 @@ void trace_example() {
 
 // stopwatch example
 #include <thread>
-
 #include "spdlog/stopwatch.h"
 void stopwatch_example() {
     spdlog::stopwatch sw;
