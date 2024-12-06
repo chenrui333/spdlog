@@ -83,7 +83,6 @@ SPDLOG_API void set_global_logger(std::shared_ptr<logger> global_logger);
 // e.g do not call set_global_logger() from one thread while calling spdlog::info() from another.
 SPDLOG_API logger *global_logger_raw() noexcept;
 
-
 template <typename... Args>
 void log(source_loc source, level lvl, format_string_t<Args...> fmt, Args &&...args) {
     global_logger_raw()->log(source, lvl, fmt, std::forward<Args>(args)...);
