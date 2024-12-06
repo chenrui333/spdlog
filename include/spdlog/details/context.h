@@ -24,6 +24,8 @@ class thread_pool;
 class SPDLOG_API context {
 public:
     static context &instance();
+    context();
+    ~context();
     context(const context &) = delete;
     context &operator=(const context &) = delete;
 
@@ -45,13 +47,10 @@ public:
 
     // clean all resources
     void shutdown();
-
     std::recursive_mutex &tp_mutex();
 
-private:
-    context();
-    ~context();
 
+private:
     std::recursive_mutex tp_mutex_;
     std::shared_ptr<thread_pool> tp_;
     std::shared_ptr<logger> global_logger_;
