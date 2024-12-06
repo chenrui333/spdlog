@@ -14,12 +14,12 @@ namespace spdlog {
 
 
 
-void set_formatter(std::unique_ptr<spdlog::formatter> formatter) {
+void set_formatter(std::unique_ptr<formatter> formatter) {
     default_logger_raw()->set_formatter(std::move(formatter));
 }
 
 void set_pattern(std::string pattern, pattern_time_type time_type) {
-    set_formatter(std::make_unique<spdlog::pattern_formatter>(std::move(pattern), time_type));
+    set_formatter(std::make_unique<pattern_formatter>(std::move(pattern), time_type));
 }
 
 level get_level() { return default_logger_raw()->log_level(); }
@@ -35,11 +35,11 @@ void set_error_handler(void (*handler)(const std::string &msg)) { default_logger
 
 void shutdown() { details::context::instance().shutdown(); }
 
-std::shared_ptr<spdlog::logger> default_logger() { return details::context::instance().default_logger(); }
+std::shared_ptr<logger> default_logger() { return details::context::instance().default_logger(); }
 
-spdlog::logger *default_logger_raw() { return details::context::instance().get_default_raw(); }
+logger *default_logger_raw() { return details::context::instance().get_default_raw(); }
 
-void set_default_logger(std::shared_ptr<spdlog::logger> default_logger) {
+void set_default_logger(std::shared_ptr<logger> default_logger) {
     details::context::instance().set_default_logger(std::move(default_logger));
 }
 

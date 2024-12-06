@@ -8,12 +8,9 @@
 // If user requests a non-existing logger, nullptr will be returned
 // This class is thread safe
 
-#include <chrono>
-#include <functional>
 #include <memory>
 #include <mutex>
 #include <string>
-#include <string_view>
 #include <unordered_map>
 
 #include "../common.h"
