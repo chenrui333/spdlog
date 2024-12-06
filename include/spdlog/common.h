@@ -120,7 +120,7 @@ enum class pattern_time_type {
 //
 // Log exception
 //
-class SPDLOG_API spdlog_ex final : public std::exception {
+class SPDLOG_API spdlog_ex : public std::exception {
 public:
     explicit spdlog_ex(std::string msg);
 
