@@ -24,7 +24,6 @@
 #include "spdlog.h"
 
 namespace spdlog {
-
 namespace details {
 static constexpr size_t default_async_q_size = 8192;
 }
@@ -45,7 +44,6 @@ struct async_factory_impl {
             tp = std::make_shared<details::thread_pool>(details::default_async_q_size, 1U);
             context->set_tp(tp);
         }
-
         auto sink = std::make_shared<Sink>(std::forward<SinkArgs>(args)...);
         auto new_logger = std::make_shared<async_logger>(std::move(logger_name), std::move(sink), std::move(tp), OverflowPolicy);
         return new_logger;
