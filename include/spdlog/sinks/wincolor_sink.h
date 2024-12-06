@@ -66,7 +66,6 @@ public:
 
 using wincolor_stdout_sink_mt = wincolor_stdout_sink<std::mutex>;
 using wincolor_stdout_sink_st = wincolor_stdout_sink<details::null_mutex>;
-
 using wincolor_stderr_sink_mt = wincolor_stderr_sink<std::mutex>;
 using wincolor_stderr_sink_st = wincolor_stderr_sink<details::null_mutex>;
 

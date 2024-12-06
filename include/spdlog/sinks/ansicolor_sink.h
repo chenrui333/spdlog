@@ -94,7 +94,6 @@ public:
 
 using ansicolor_stdout_sink_mt = ansicolor_stdout_sink<std::mutex>;
 using ansicolor_stdout_sink_st = ansicolor_stdout_sink<details::null_mutex>;
-
 using ansicolor_stderr_sink_mt = ansicolor_stderr_sink<std::mutex>;
 using ansicolor_stderr_sink_st = ansicolor_stderr_sink<details::null_mutex>;
 

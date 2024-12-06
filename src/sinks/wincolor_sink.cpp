@@ -125,5 +125,11 @@ void wincolor_sink<Mutex>::write_to_file_(const memory_buf_t &formatted) {
 template class SPDLOG_API wincolor_sink<std::mutex>;
 template class SPDLOG_API wincolor_sink<details::null_mutex>;
 
+template class SPDLOG_API wincolor_stdout_sink<std::mutex>;
+template class SPDLOG_API wincolor_stdout_sink<spdlog::details::null_mutex>;
+
+template class SPDLOG_API wincolor_stderr_sink<std::mutex>;
+template class SPDLOG_API wincolor_stderr_sink<spdlog::details::null_mutex>;
+
 }  // namespace sinks
 }  // namespace spdlog
