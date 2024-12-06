@@ -22,9 +22,9 @@ namespace spdlog {
 
 using default_factory = synchronous_factory;
 
-void set_context(std::shared_ptr<details::context> context);
-std::shared_ptr<details::context> context();
-const std::shared_ptr<details::context> &context_ref();
+SPDLOG_API void set_context(std::shared_ptr<details::context> context);
+SPDLOG_API std::shared_ptr<details::context> context();
+SPDLOG_API const std::shared_ptr<details::context> &context_ref();
 
 // Create a logger with a templated sink type
 // Example:
