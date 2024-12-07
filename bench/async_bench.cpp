@@ -11,8 +11,9 @@
 #include <memory>
 #include <string>
 #include <thread>
+#include <locale>
 
-#include "spdlog/async.h"
+#include "spdlog/sinks/async_sink.h"
 #include "spdlog/sinks/basic_file_sink.h"
 #include "spdlog/spdlog.h"
 
@@ -31,12 +32,11 @@ void bench_mt(int howmany, std::shared_ptr<spdlog::logger> log, int thread_count
 int count_lines(const char *filename) {
     int counter = 0;
     auto *infile = fopen(filename, "r");
-    int ch;
+    int ch = 0;
     while (EOF != (ch = getc(infile))) {
         if ('\n' == ch) counter++;
     }
     fclose(infile);
-
     return counter;
 }
 
@@ -54,7 +54,11 @@ void verify_file(const char *filename, int expected_count) {
     #pragma warning(pop)
 #endif
 
+using namespace spdlog::sinks;
+
 int main(int argc, char *argv[]) {
+    // setlocale to show thousands separators
+    std::locale::global(std::locale("en_US.UTF-8"));
     int howmany = 1000000;
     int queue_size = std::min(howmany + 2, 8192);
     int threads = 10;
@@ -62,10 +66,10 @@ int main(int argc, char *argv[]) {
 
     try {
         spdlog::set_pattern("[%^%l%$] %v");
-        if (argc == 1) {
-            spdlog::info("Usage: {} <message_count> <threads> <q_size> <iterations>", argv[0]);
-            return 0;
-        }
+        // if (argc == 1) {
+        //     spdlog::info("Usage: {} <message_count> <threads> <q_size> <iterations>", argv[0]);
+        //     return 0;
+        // }
 
         if (argc > 1) howmany = atoi(argv[1]);
         if (argc > 2) threads = atoi(argv[2]);
@@ -79,7 +83,7 @@ int main(int argc, char *argv[]) {
 
         if (argc > 4) iters = atoi(argv[4]);
 
-        auto slot_size = sizeof(spdlog::details::async_msg);
+        auto slot_size = sizeof(details::async_log_msg);
         spdlog::info("-------------------------------------------------");
         spdlog::info("Messages     : {:L}", howmany);
         spdlog::info("Threads      : {:L}", threads);
@@ -94,12 +98,12 @@ int main(int argc, char *argv[]) {
         spdlog::info("Queue Overflow Policy: block");
         spdlog::info("*********************************");
         for (int i = 0; i < iters; i++) {
-            auto tp = std::make_shared<details::thread_pool>(queue_size, 1);
-            auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(filename, true);
-            auto logger =
-                std::make_shared<async_logger>("async_logger", std::move(file_sink), std::move(tp), async_overflow_policy::block);
+            auto async_sink = std::make_shared<async_sink_mt>(queue_size);
+            auto file_sink = std::make_shared<basic_file_sink_mt>(filename, true);
+            async_sink->add_sink(std::move(file_sink));
+            auto logger = std::make_shared<spdlog::logger>("async_logger", std::move(async_sink));
             bench_mt(howmany, std::move(logger), threads);
-            // verify_file(filename, howmany);
+            verify_file(filename, howmany);
         }
 
         spdlog::info("");
@@ -109,10 +113,11 @@ int main(int argc, char *argv[]) {
         // do same test but discard the oldest if queue is full instead of blocking
         filename = "logs/basic_async-overrun.log";
         for (int i = 0; i < iters; i++) {
-            auto tp = std::make_shared<details::thread_pool>(queue_size, 1);
-            auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(filename, true);
-            auto logger = std::make_shared<async_logger>("async_logger", std::move(file_sink), std::move(tp),
-                                                         async_overflow_policy::overrun_oldest);
+            auto async_sink = std::make_shared<async_sink_mt>(queue_size);
+            async_sink->set_overflow_policy(async_sink_mt::overflow_policy::overrun_oldest);
+            auto file_sink = std::make_shared<basic_file_sink_mt>(filename, true);
+            async_sink->add_sink(std::move(file_sink));
+            auto logger = std::make_shared<spdlog::logger>("async_logger", std::move(async_sink));
             bench_mt(howmany, std::move(logger), threads);
         }
         spdlog::shutdown();
