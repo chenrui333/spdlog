@@ -4,6 +4,7 @@
 #include <thread>
 #include <atomic>
 #include <cassert>
+#include <functional>
 
 #include "../details/async_log_msg.h"
 #include "../details/mpmc_blocking_q.h"
@@ -31,7 +32,7 @@ public:
         discard_new      // Discard the log message if the queue is full
     };
 
-    explicit async_sink(size_t queue_size = default_queue_size) {
+    async_sink(size_t queue_size,  std::function<void()> on_thread_start, std::function<void()> on_thread_stop) {
         if (queue_size == 0 || queue_size > max_queue_size) {
             throw spdlog_ex("async_sink: invalid queue size");
         }
@@ -39,15 +40,10 @@ public:
         //   queue_size, sizeof(details::async_log_msg), (sizeof(details::async_log_msg) * queue_size)/1024);
         q_ = std::make_unique<queue_t>(queue_size);
 
-        worker_thread_ = std::thread([this] {
-            details::async_log_msg incoming_msg;
-            for (;;) {
-                q_->dequeue(incoming_msg);
-                if (incoming_msg.message_type() == async_log_msg::type::terminate) {
-                    break;
-                }
-                base_t::sink_it_(incoming_msg);
-            }
+        worker_thread_ = std::thread([this, on_thread_start, on_thread_stop] {
+            if (on_thread_start) on_thread_start();
+            this->worker_loop();
+            if (on_thread_stop) on_thread_stop();
         });
     }
     ~async_sink() override {
@@ -57,6 +53,11 @@ public:
         } catch (...) {
         }
     };
+
+    async_sink(): async_sink(default_queue_size, nullptr, nullptr) {}
+    explicit async_sink(size_t queue_size): async_sink(queue_size, nullptr, nullptr) {}
+    async_sink(std::function<void()> on_thread_start, std::function<void()> on_thread_stop):
+        async_sink(default_queue_size, on_thread_start, on_thread_stop) {}
 
     async_sink(const async_sink &) = delete;
     async_sink &operator=(const async_sink &) = delete;
@@ -98,7 +99,25 @@ private:
                 assert(false);
                 throw spdlog_ex("async_sink: invalid overflow policy");
         }
+    }
 
+    void worker_loop () {
+        details::async_log_msg incoming_msg;
+        for (;;) {
+            q_->dequeue(incoming_msg);
+            switch (incoming_msg.message_type()) {
+                case async_log_msg::type::log:
+                    base_t::sink_it_(incoming_msg);
+                break;
+                case async_log_msg::type::flush:
+                    base_t::flush_();
+                break;
+                case async_log_msg::type::terminate:
+                    return;
+                default:
+                    assert(false);
+            }
+        }
     }
 
     std::atomic<overflow_policy> overflow_policy_ = overflow_policy::block;
