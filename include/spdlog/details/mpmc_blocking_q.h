@@ -37,7 +37,7 @@ public:
         push_cv_.notify_one();
     }
 
-    // enqueue immediately. overrun oldest message in the queue if no room left.
+    // enqueue immediately. overrun the oldest message in the queue if no room left.
     void enqueue_nowait(T &&item) {
         {
             std::unique_lock<std::mutex> lock(queue_mutex_);

@@ -26,10 +26,9 @@ public:
 
     // Async overflow policy - block by default.
     enum class overflow_policy : std::uint8_t {
-        block,           // Block until message can be enqueued (default
-        overrun_oldest,  // Discard oldest message in the queue if full when trying to
-                         // add new item.
-        discard_new      // Discard new message if the queue is full when trying to add new item.
+        block,           // Block until the log message can be enqueued (default).
+        overrun_oldest,  // Overrun the oldest message in the queue if full.
+        discard_new      // Discard the log message if the queue is full
     };
 
     explicit async_sink(size_t queue_size = default_queue_size) {
