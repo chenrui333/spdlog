@@ -15,10 +15,10 @@ namespace details {
 
 class SPDLOG_API async_log_msg : public log_msg {
 public:
-    enum class msg_type:std::uint8_t { log, flush, terminate };
+    enum class type:std::uint8_t { log, flush, terminate };
     async_log_msg() = default;
-    explicit async_log_msg(msg_type type);
-    async_log_msg(msg_type type, const log_msg &orig_msg);
+    explicit async_log_msg(type type);
+    async_log_msg(type type, const log_msg &orig_msg);
 
     ~async_log_msg() = default;
     async_log_msg(const async_log_msg &other);
@@ -26,9 +26,9 @@ public:
     async_log_msg &operator=(const async_log_msg &other);
     async_log_msg &operator=(async_log_msg &&other) noexcept;
 
-    msg_type message_type() const {return msg_type_;}
+    type message_type() const {return msg_type_;}
 private:
-    msg_type msg_type_{msg_type::log};
+    type msg_type_{type::log};
     memory_buf_t buffer_;
     void update_string_views();
 };
