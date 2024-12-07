@@ -7,8 +7,8 @@
 #include <mutex>
 #include <string_view>
 
+#include "../details/async_log_msg.h"
 #include "../details/circular_q.h"
-#include "../details/log_msg_buffer.h"
 #include "../details/null_mutex.h"
 #include "./base_sink.h"
 
