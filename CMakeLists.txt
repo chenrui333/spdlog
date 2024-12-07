@@ -157,9 +157,8 @@ set(SPDLOG_HEADERS
     "include/spdlog/details/mpmc_blocking_q.h"
     "include/spdlog/details/null_mutex.h"
     "include/spdlog/details/os.h"
-    "include/spdlog/details/periodic_worker.h"
     "include/spdlog/details/context.h"
-        "include/spdlog/fmt/bin_to_hex.h"
+    "include/spdlog/fmt/bin_to_hex.h"
     "include/spdlog/fmt/fmt.h"
     "include/spdlog/sinks/android_sink.h"
     "include/spdlog/sinks/base_sink.h"
@@ -186,7 +185,7 @@ set(SPDLOG_HEADERS
     "include/spdlog/sinks/udp_sink.h")
 
 set(SPDLOG_SRCS
-        "src/common.cpp"
+    "src/common.cpp"
     "src/logger.cpp"
     "src/pattern_formatter.cpp"
     "src/spdlog.cpp"
@@ -194,27 +193,26 @@ set(SPDLOG_SRCS
 	"src/details/os_filesystem.cpp"
     "src/details/log_msg.cpp"
     "src/details/log_msg_buffer.cpp"
-        "src/details/context.cpp"
-        "src/sinks/base_sink.cpp"
+    "src/details/context.cpp"
+    "src/sinks/base_sink.cpp"
     "src/sinks/basic_file_sink.cpp"
     "src/sinks/rotating_file_sink.cpp"
-        "src/sinks/stdout_sinks.cpp")
+    "src/sinks/stdout_sinks.cpp")
 
 if(WIN32)
     list(APPEND SPDLOG_SRCS
-            "src/details/os_windows.cpp"
-            "src/sinks/wincolor_sink.cpp")
-    list(
-        APPEND SPDLOG_HEADERS
-            "include/spdlog/sinks/wincolor_sink.h"
-            "include/spdlog/details/tcp_client_windows.h"
-            "include/spdlog/details/udp_client_windows.h"
-            "include/spdlog/details/windows_include.h"
-            "include/spdlog/sinks/win_eventlog_sink.h")
+        "src/details/os_windows.cpp"
+        "src/sinks/wincolor_sink.cpp")
+    list(APPEND SPDLOG_HEADERS
+        "include/spdlog/sinks/wincolor_sink.h"
+        "include/spdlog/details/tcp_client_windows.h"
+        "include/spdlog/details/udp_client_windows.h"
+        "include/spdlog/details/windows_include.h"
+        "include/spdlog/sinks/win_eventlog_sink.h")
 else()
     list(APPEND SPDLOG_SRCS
-            "src/details/os_unix.cpp"
-            "src/sinks/ansicolor_sink.cpp")
+        "src/details/os_unix.cpp"
+        "src/sinks/ansicolor_sink.cpp")
     list(APPEND SPDLOG_HEADERS
         "include/spdlog/details/tcp_client_unix.h"
         "include/spdlog/details/udp_client_unix.h"
