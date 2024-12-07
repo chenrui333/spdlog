@@ -170,17 +170,17 @@ public:
     // create new logger with same sinks and configuration.
     virtual std::shared_ptr<logger> clone(std::string logger_name);
 
-protected:
+private:
     std::string name_;
     std::vector<sink_ptr> sinks_;
-    spdlog::atomic_level_t level_{level::info};
-    spdlog::atomic_level_t flush_level_{level::off};
+    atomic_level_t level_{level::info};
+    atomic_level_t flush_level_{level::off};
     err_handler custom_err_handler_{nullptr};
 
     // common implementation for after templated public api has been resolved to format string and
     // args
     template <typename... Args>
-    void log_with_format_(source_loc loc, const level lvl, const format_string_t<Args...> &format_string, Args &&...args) {
+    void log_with_format_(source_loc loc, const level lvl, const format_string_t<Args...> &format_string, const Args &...args) {
         assert(should_log(lvl));
         try {
             memory_buf_t buf;
