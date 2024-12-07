@@ -8,6 +8,7 @@
 #include "includes.h"
 #include "spdlog/details/os.h"
 #include "spdlog/sinks/ostream_sink.h"
+#include "spdlog/sinks/async_sink.h"
 #include "test_sink.h"
 
 template <class T>
@@ -94,26 +95,25 @@ TEST_CASE("clone-logger", "[clone]") {
 
 TEST_CASE("clone async", "[clone]") {
     // TODO: fix this test
-    // using spdlog::sinks::test_sink_mt;
-    // spdlog::init_thread_pool(4, 1);
-    // auto test_sink = std::make_shared<test_sink_mt>();
-    // auto logger = std::make_shared<spdlog::async_logger>("orig", test_sink, spdlog::thread_pool());
-    // logger->set_pattern("%v");
-    // auto cloned = logger->clone("clone");
-    //
-    // REQUIRE(cloned->name() == "clone");
-    // REQUIRE(logger->sinks() == cloned->sinks());
-    // REQUIRE(logger->log_level() == cloned->log_level());
-    // REQUIRE(logger->flush_level() == cloned->flush_level());
-    //
-    // logger->info("Some message 1");
-    // cloned->info("Some message 2");
-    //
-    // spdlog::details::os::sleep_for_millis(100);
-    //
-    // REQUIRE(test_sink->lines().size() == 2);
-    // REQUIRE(test_sink->lines()[0] == "Some message 1");
-    // REQUIRE(test_sink->lines()[1] == "Some message 2");
+    using spdlog::sinks::test_sink_mt;
+    auto async_sink = std::make_shared<spdlog::sinks::async_sink_mt>(32);
+    auto test_sink = std::make_shared<test_sink_mt>();
+    async_sink->add_sink(test_sink);
+    auto logger = std::make_shared<spdlog::logger>("orig", async_sink);
+    logger->set_pattern("%v");
+    auto cloned = logger->clone("clone");
+
+    REQUIRE(cloned->name() == "clone");
+    REQUIRE(logger->sinks() == cloned->sinks());
+    REQUIRE(logger->log_level() == cloned->log_level());
+    REQUIRE(logger->flush_level() == cloned->flush_level());
+
+    logger->info("Some message 1");
+    cloned->info("Some message 2");
+    spdlog::details::os::sleep_for_millis(100);
+    REQUIRE(test_sink->lines().size() == 2);
+    REQUIRE(test_sink->lines()[0] == "Some message 1");
+    REQUIRE(test_sink->lines()[1] == "Some message 2");
 }
 
 TEST_CASE("global logger API", "[global logger]") {
