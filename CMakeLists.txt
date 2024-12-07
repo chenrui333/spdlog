@@ -139,7 +139,6 @@ find_package(Threads REQUIRED)
 # Library sources
 # ---------------------------------------------------------------------------------------
 set(SPDLOG_HEADERS
-        "include/spdlog/async_logger.h"
     "include/spdlog/common.h"
     "include/spdlog/formatter.h"
     "include/spdlog/fwd.h"
