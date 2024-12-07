@@ -2,12 +2,7 @@
 // Distributed under the MIT License (http://opensource.org/licenses/MIT)
 
 #include "spdlog/details/context.h"
-
 #include "spdlog/logger.h"
-
-#ifndef SPDLOG_DISABLE_GLOBAL_LOGGER
-    #include "spdlog/sinks/stdout_color_sinks.h"
-#endif  // SPDLOG_DISABLE_GLOBAL_LOGGER
 
 #include <memory>
 

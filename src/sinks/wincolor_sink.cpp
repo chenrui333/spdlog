@@ -4,6 +4,7 @@
 // clang-format off
 #include "spdlog/details/windows_include.h"
 #include <wincon.h>
+#include <mutex>
 
 // clang-format on
 #include "spdlog/sinks/wincolor_sink.h"
@@ -134,9 +135,7 @@ wincolor_stderr_sink<Mutex>::wincolor_stderr_sink(color_mode mode)
 }  // namespace sinks
 }  // namespace spdlog
 
-
 // template instantiations
-#include <mutex>
 #include "spdlog/details/null_mutex.h"
 template class SPDLOG_API spdlog::sinks::wincolor_stdout_sink<std::mutex>;
 template class SPDLOG_API spdlog::sinks::wincolor_stdout_sink<spdlog::details::null_mutex>;

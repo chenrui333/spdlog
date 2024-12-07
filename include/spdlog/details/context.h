@@ -13,7 +13,6 @@
 #include <string>
 
 #include "../common.h"
-#include "./periodic_worker.h"
 
 namespace spdlog {
 class logger;

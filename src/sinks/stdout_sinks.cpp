@@ -4,6 +4,8 @@
 #include "spdlog/sinks/stdout_sinks.h"
 
 #include <memory>
+#include <mutex>
+
 #include "spdlog/details/os.h"
 #include "spdlog/pattern_formatter.h"
 
@@ -83,9 +85,7 @@ stderr_sink<Mutex>::stderr_sink()
 }  // namespace sinks
 }  // namespace spdlog
 
-
 // template instantiations
-#include <mutex>
 #include "spdlog/details/null_mutex.h"
 template class SPDLOG_API spdlog::sinks::stdout_sink<std::mutex>;
 template class SPDLOG_API spdlog::sinks::stdout_sink<spdlog::details::null_mutex>;
