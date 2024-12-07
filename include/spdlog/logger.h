@@ -18,9 +18,9 @@
 #include <iterator>
 #include <vector>
 
-#include "./common.h"
-#include "./details/log_msg.h"
-#include "./sinks/sink.h"
+#include "common.h"
+#include "details/log_msg.h"
+#include "sinks/sink.h"
 
 #define SPDLOG_LOGGER_CATCH(location)                                                                                     \
     catch (const std::exception &ex) {                                                                                    \
@@ -191,7 +191,7 @@ protected:
     }
 
     // log the given message (if the given log level is high enough)
-    virtual void sink_it_(const details::log_msg &msg) {
+    void sink_it_(const details::log_msg &msg) {
         assert(should_log(msg.log_level));
         for (auto &sink : sinks_) {
             if (sink->should_log(msg.log_level)) {
@@ -206,7 +206,7 @@ protected:
             flush_();
         }
     }
-    virtual void flush_();
+    void flush_();
     [[nodiscard]] bool should_flush_(const details::log_msg &msg) const;
 
     // handle errors during logging.
