@@ -12,7 +12,6 @@
 #include "spdlog/common.h"
 #include "spdlog/details/file_helper.h"
 #include "spdlog/details/os.h"
-#include "spdlog/details/null_mutex.h"
 
 namespace spdlog {
 namespace sinks {
@@ -137,9 +136,12 @@ bool rotating_file_sink<Mutex>::rename_file_(const filename_t &src_filename, con
     return details::os::rename(src_filename, target_filename);
 }
 
-// template instantiations
-template class SPDLOG_API rotating_file_sink<std::mutex>;
-template class SPDLOG_API rotating_file_sink<details::null_mutex>;
-
 }  // namespace sinks
 }  // namespace spdlog
+
+
+// template instantiations
+#include <mutex>
+#include "spdlog/details/null_mutex.h"
+template class SPDLOG_API spdlog::sinks::rotating_file_sink<std::mutex>;
+template class SPDLOG_API spdlog::sinks::rotating_file_sink<spdlog::details::null_mutex>;

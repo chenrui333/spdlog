@@ -135,15 +135,10 @@ wincolor_stderr_sink<Mutex>::wincolor_stderr_sink(color_mode mode)
 }  // namespace spdlog
 
 
+// template instantiations
 #include <mutex>
 #include "spdlog/details/null_mutex.h"
-
-// template instantiations
-template class SPDLOG_API spdlog::sinks::wincolor_sink<std::mutex>;
-template class SPDLOG_API spdlog::sinks::wincolor_sink<spdlog::details::null_mutex>;
-
 template class SPDLOG_API spdlog::sinks::wincolor_stdout_sink<std::mutex>;
 template class SPDLOG_API spdlog::sinks::wincolor_stdout_sink<spdlog::details::null_mutex>;
-
 template class SPDLOG_API spdlog::sinks::wincolor_stderr_sink<std::mutex>;
 template class SPDLOG_API spdlog::sinks::wincolor_stderr_sink<spdlog::details::null_mutex>;

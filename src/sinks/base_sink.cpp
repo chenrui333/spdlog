@@ -4,9 +4,7 @@
 #include "spdlog/sinks/base_sink.h"
 
 #include <memory>
-#include <mutex>
 #include "spdlog/common.h"
-#include "spdlog/details/null_mutex.h"
 #include "spdlog/pattern_formatter.h"
 
 namespace spdlog {
@@ -54,9 +52,12 @@ void base_sink<Mutex>::set_formatter_(std::unique_ptr<formatter> sink_formatter)
     formatter_ = std::move(sink_formatter);
 }
 
-// template instantiations
-template class SPDLOG_API base_sink<std::mutex>;
-template class SPDLOG_API base_sink<details::null_mutex>;
-
 } // namespace sinks
 } // namespace spdlog
+
+
+// template instantiations
+#include <mutex>
+#include "spdlog/details/null_mutex.h"
+template class SPDLOG_API spdlog::sinks::base_sink<std::mutex>;
+template class SPDLOG_API spdlog::sinks::base_sink<spdlog::details::null_mutex>;
