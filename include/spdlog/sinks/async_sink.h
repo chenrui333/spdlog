@@ -32,7 +32,7 @@ public:
         discard_new      // Discard the log message if the queue is full
     };
 
-    async_sink(size_t queue_size,  std::function<void()> on_thread_start, std::function<void()> on_thread_stop) {
+    async_sink(size_t queue_size, std::function<void()> on_thread_start, std::function<void()> on_thread_stop) {
         if (queue_size == 0 || queue_size > max_queue_size) {
             throw spdlog_ex("async_sink: invalid queue size");
         }
