@@ -233,7 +233,7 @@ void err_handler_example() {
     #include "spdlog/sinks/syslog_sink.h"
 void syslog_example() {
     std::string ident = "spdlog-example";
-    auto syslog_logger = spdlog::create<syslog_sink_mt>("syslog", ident, 0);
+    auto syslog_logger = spdlog::create<syslog_sink_mt>("syslog", ident, LOG_PID);
     syslog_logger->warn("This is warning that will end up in syslog.");
 }
 #endif
