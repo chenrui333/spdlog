@@ -43,7 +43,7 @@ async_log_msg &async_log_msg::operator=(const async_log_msg &other) {
 }
 
 async_log_msg &async_log_msg::operator=(async_log_msg &&other) noexcept {
-    log_msg::operator=(std::forward<async_log_msg>(other));
+    log_msg::operator=(other);
     msg_type_ = other.msg_type_;
     buffer_ = std::move(other.buffer_);
     update_string_views();
