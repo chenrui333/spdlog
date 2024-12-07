@@ -46,7 +46,7 @@ public:
     }
 
 protected:
-    void sink_it_(const details::log_msg &msg) override { q_.push_back(details::async_log_msg{details::async_log_msg::msg_type::log, msg}); }
+    void sink_it_(const details::log_msg &msg) override { q_.push_back(details::async_log_msg{details::async_log_msg::type::log, msg}); }
     void flush_() override {}
 
 private:
