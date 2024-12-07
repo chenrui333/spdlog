@@ -94,7 +94,6 @@ TEST_CASE("clone-logger", "[clone]") {
 }
 
 TEST_CASE("clone async", "[clone]") {
-    // TODO: fix this test
     using spdlog::sinks::test_sink_mt;
     auto async_sink = std::make_shared<spdlog::sinks::async_sink_mt>(32);
     auto test_sink = std::make_shared<test_sink_mt>();
