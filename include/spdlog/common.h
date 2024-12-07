@@ -12,6 +12,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <cstdint>
 
 #include "./source_loc.h"
 
@@ -73,7 +74,7 @@ using format_string_t = fmt::format_string<Args...>;
 #endif
 
 // Log level enum
-enum class level {
+enum class level : std::uint8_t {
     trace = SPDLOG_LEVEL_TRACE,
     debug = SPDLOG_LEVEL_DEBUG,
     info = SPDLOG_LEVEL_INFO,
@@ -81,7 +82,7 @@ enum class level {
     err = SPDLOG_LEVEL_ERROR,
     critical = SPDLOG_LEVEL_CRITICAL,
     off = SPDLOG_LEVEL_OFF,
-    n_levels
+    n_levels = SPDLOG_LEVEL_OFF + 1
 };
 
 using atomic_level_t = std::atomic<level>;
