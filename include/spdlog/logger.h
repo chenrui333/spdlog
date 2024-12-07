@@ -180,7 +180,7 @@ private:
     // common implementation for after templated public api has been resolved to format string and
     // args
     template <typename... Args>
-    void log_with_format_(source_loc loc, const level lvl, const format_string_t<Args...> &format_string, const Args &...args) {
+    void log_with_format_(source_loc loc, const level lvl, const format_string_t<Args...> &format_string, Args &&...args) {
         assert(should_log(lvl));
         try {
             memory_buf_t buf;
