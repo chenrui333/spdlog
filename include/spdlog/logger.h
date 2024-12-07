@@ -60,7 +60,7 @@ public:
     logger(const logger &other) noexcept;
     logger(logger &&other) noexcept;
 
-    virtual ~logger() = default;
+    ~logger() = default;
 
     template <typename... Args>
     void log(source_loc loc, level lvl, format_string_t<Args...> fmt, Args &&...args) {
@@ -168,7 +168,7 @@ public:
     void set_error_handler(err_handler);
 
     // create new logger with same sinks and configuration.
-    virtual std::shared_ptr<logger> clone(std::string logger_name);
+    std::shared_ptr<logger> clone(std::string logger_name);
 
 private:
     std::string name_;
