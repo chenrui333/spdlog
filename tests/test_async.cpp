@@ -1,180 +1,210 @@
-//#include "includes.h"
-//#include "spdlog/async.h"
-//#include "spdlog/sinks/basic_file_sink.h"
-//#include "test_sink.h"
-//
-//#define TEST_FILENAME "test_logs/async_test.log"
-//
-//TEST_CASE("basic async test ", "[async]") {
-//    auto test_sink = std::make_shared<spdlog::sinks::test_sink_mt>();
-//    size_t overrun_counter = 0;
-//    size_t queue_size = 128;
-//    size_t messages = 256;
-//    {
-//        auto tp = std::make_shared<spdlog::details::thread_pool>(queue_size, 1);
-//        auto logger = std::make_shared<spdlog::async_logger>("as", test_sink, tp, spdlog::async_overflow_policy::block);
-//        for (size_t i = 0; i < messages; i++) {
-//            logger->info("Hello message #{}", i);
-//        }
-//        logger->flush();
-//        overrun_counter = tp->overrun_counter();
-//    }
-//    REQUIRE(test_sink->msg_counter() == messages);
-//    REQUIRE(test_sink->flush_counter() == 1);
-//    REQUIRE(overrun_counter == 0);
-//}
-//
-//TEST_CASE("discard policy ", "[async]") {
-//    auto test_sink = std::make_shared<spdlog::sinks::test_sink_mt>();
-//    test_sink->set_delay(std::chrono::milliseconds(1));
-//    size_t queue_size = 4;
-//    size_t messages = 1024;
-//
-//    auto tp = std::make_shared<spdlog::details::thread_pool>(queue_size, 1);
-//    auto logger = std::make_shared<spdlog::async_logger>("as", test_sink, tp, spdlog::async_overflow_policy::overrun_oldest);
-//    for (size_t i = 0; i < messages; i++) {
-//        logger->info("Hello message");
-//    }
-//    REQUIRE(test_sink->msg_counter() < messages);
-//    REQUIRE(tp->overrun_counter() > 0);
-//}
-//
-//TEST_CASE("discard policy discard_new ", "[async]") {
-//    auto test_sink = std::make_shared<spdlog::sinks::test_sink_mt>();
-//    test_sink->set_delay(std::chrono::milliseconds(1));
-//    size_t queue_size = 4;
-//    size_t messages = 1024;
-//
-//    auto tp = std::make_shared<spdlog::details::thread_pool>(queue_size, 1);
-//    auto logger = std::make_shared<spdlog::async_logger>("as", test_sink, tp, spdlog::async_overflow_policy::discard_new);
-//    for (size_t i = 0; i < messages; i++) {
-//        logger->info("Hello message");
-//    }
-//    REQUIRE(test_sink->msg_counter() < messages);
-//    REQUIRE(tp->discard_counter() > 0);
-//}
-//
-//TEST_CASE("discard policy using factory ", "[async]") {
-//    size_t queue_size = 4;
-//    size_t messages = 1024;
-//    spdlog::init_thread_pool(queue_size, 1);
-//
-//    auto logger = spdlog::create_async_nb<spdlog::sinks::test_sink_mt>("as2");
-//    auto test_sink = std::static_pointer_cast<spdlog::sinks::test_sink_mt>(logger->sinks()[0]);
-//    test_sink->set_delay(std::chrono::milliseconds(3));
-//
-//    for (size_t i = 0; i < messages; i++) {
-//        logger->info("Hello message");
-//    }
-//
-//    REQUIRE(test_sink->msg_counter() < messages);
-//}
-//
-//TEST_CASE("flush", "[async]") {
-//    auto test_sink = std::make_shared<spdlog::sinks::test_sink_mt>();
-//    size_t queue_size = 256;
-//    size_t messages = 256;
-//    {
-//        auto tp = std::make_shared<spdlog::details::thread_pool>(queue_size, 1);
-//        auto logger = std::make_shared<spdlog::async_logger>("as", test_sink, tp, spdlog::async_overflow_policy::block);
-//        for (size_t i = 0; i < messages; i++) {
-//            logger->info("Hello message #{}", i);
-//        }
-//
-//        logger->flush();
-//    }
-//    // std::this_thread::sleep_for(std::chrono::milliseconds(250));
-//    REQUIRE(test_sink->msg_counter() == messages);
-//    REQUIRE(test_sink->flush_counter() == 1);
-//}
-//
-//TEST_CASE("tp->wait_empty() ", "[async]") {
-//    auto test_sink = std::make_shared<spdlog::sinks::test_sink_mt>();
-//    test_sink->set_delay(std::chrono::milliseconds(5));
-//    size_t messages = 100;
-//
-//    auto tp = std::make_shared<spdlog::details::thread_pool>(messages, 2);
-//    auto logger = std::make_shared<spdlog::async_logger>("as", test_sink, tp, spdlog::async_overflow_policy::block);
-//    for (size_t i = 0; i < messages; i++) {
-//        logger->info("Hello message #{}", i);
-//    }
-//    logger->flush();
-//    tp.reset();
-//
-//    REQUIRE(test_sink->msg_counter() == messages);
-//    REQUIRE(test_sink->flush_counter() == 1);
-//}
-//
-//TEST_CASE("multi threads", "[async]") {
-//    auto test_sink = std::make_shared<spdlog::sinks::test_sink_mt>();
-//    size_t queue_size = 128;
-//    size_t messages = 256;
-//    size_t n_threads = 10;
-//    {
-//        auto tp = std::make_shared<spdlog::details::thread_pool>(queue_size, 1);
-//        auto logger = std::make_shared<spdlog::async_logger>("as", test_sink, tp, spdlog::async_overflow_policy::block);
-//
-//        std::vector<std::thread> threads;
-//        for (size_t i = 0; i < n_threads; i++) {
-//            threads.emplace_back([logger, messages] {
-//                for (size_t j = 0; j < messages; j++) {
-//                    logger->info("Hello message #{}", j);
-//                }
-//            });
-//            logger->flush();
-//        }
-//
-//        for (auto &t : threads) {
-//            t.join();
-//        }
-//    }
-//
-//    REQUIRE(test_sink->msg_counter() == messages * n_threads);
-//    REQUIRE(test_sink->flush_counter() == n_threads);
-//}
-//
-//TEST_CASE("to_file", "[async]") {
-//    prepare_logdir();
-//    size_t messages = 1024;
-//    size_t tp_threads = 1;
-//    spdlog::filename_t filename = SPDLOG_FILENAME_T(TEST_FILENAME);
-//    {
-//        auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(filename, true);
-//        auto tp = std::make_shared<spdlog::details::thread_pool>(messages, tp_threads);
-//        auto logger = std::make_shared<spdlog::async_logger>("as", std::move(file_sink), std::move(tp));
-//
-//        for (size_t j = 0; j < messages; j++) {
-//            logger->info("Hello message #{}", j);
-//        }
-//    }
-//
-//    require_message_count(TEST_FILENAME, messages);
-//    auto contents = file_contents(TEST_FILENAME);
-//    using spdlog::details::os::default_eol;
-//    REQUIRE(ends_with(contents, spdlog::fmt_lib::format("Hello message #1023{}", default_eol)));
-//}
-//
-//TEST_CASE("to_file multi-workers", "[async]") {
-//    prepare_logdir();
-//    size_t messages = 1024 * 10;
-//    size_t tp_threads = 10;
-//    spdlog::filename_t filename = SPDLOG_FILENAME_T(TEST_FILENAME);
-//    {
-//        auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(filename, true);
-//        auto tp = std::make_shared<spdlog::details::thread_pool>(messages, tp_threads);
-//        auto logger = std::make_shared<spdlog::async_logger>("as", std::move(file_sink), std::move(tp));
-//
-//        for (size_t j = 0; j < messages; j++) {
-//            logger->info("Hello message #{}", j);
-//        }
-//    }
-//    require_message_count(TEST_FILENAME, messages);
-//}
-//
-//TEST_CASE("bad_tp", "[async]") {
-//    auto test_sink = std::make_shared<spdlog::sinks::test_sink_mt>();
-//    std::shared_ptr<spdlog::details::thread_pool> const empty_tp;
-//    auto logger = std::make_shared<spdlog::async_logger>("as", test_sink, empty_tp);
-//    logger->info("Please throw an exception");
-//    REQUIRE(test_sink->msg_counter() == 0);
-//}
+#include "includes.h"
+#include "spdlog/sinks/async_sink.h"
+#include "spdlog/sinks/basic_file_sink.h"
+#include "test_sink.h"
+
+#include <tuple>
+
+#define TEST_FILENAME "test_logs/async_test.log"
+
+using spdlog::sinks::sink;
+using spdlog::sinks::test_sink_st;
+using spdlog::sinks::async_sink_mt;
+
+auto creat_async_logger(size_t queue_size, std::shared_ptr<sink> backend_sink) {
+    auto async_sink = std::make_shared<async_sink_mt>(queue_size);
+    async_sink->add_sink(backend_sink);
+    auto logger = std::make_shared<spdlog::logger>("async_logger", async_sink);
+    return std::make_tuple(logger, async_sink);
+}
+
+TEST_CASE("basic async test ", "[async]") {
+    auto test_sink = std::make_shared<test_sink_st>();
+    size_t overrun_counter = 0;
+    size_t queue_size = 16;
+    size_t messages = 256;
+    {
+        auto [logger, async_sink] = creat_async_logger(queue_size, test_sink);
+        for (size_t i = 0; i < messages; i++) {
+            logger->info("Hello message #{}", i);
+        }
+        logger->flush();
+        overrun_counter = async_sink->get_overrun_counter();
+    }
+    // logger and async_sink are destroyed here so the queue should be emptied
+    REQUIRE(test_sink->msg_counter() == messages);
+    REQUIRE(test_sink->flush_counter() == 1);
+    REQUIRE(overrun_counter == 0);
+}
+
+TEST_CASE("discard policy ", "[async]") {
+    auto test_sink = std::make_shared<test_sink_st>();
+    test_sink->set_delay(std::chrono::milliseconds(1));
+    size_t queue_size = 4;
+    size_t messages = 1024;
+
+    auto [logger, async_sink] = creat_async_logger(queue_size, test_sink);
+    async_sink->set_overflow_policy(async_sink_mt::overflow_policy::overrun_oldest);
+    for (size_t i = 0; i < messages; i++) {
+        logger->info("Hello message");
+    }
+    REQUIRE(test_sink->msg_counter() < messages);
+    REQUIRE(async_sink->get_overrun_counter() > 0);
+}
+
+TEST_CASE("discard policy discard_new ", "[async]") {
+    auto test_sink = std::make_shared<spdlog::sinks::test_sink_st>();
+    test_sink->set_delay(std::chrono::milliseconds(1));
+    size_t queue_size = 4;
+    size_t messages = 1024;
+
+    auto [logger, async_sink] = creat_async_logger(queue_size, test_sink);
+    async_sink->set_overflow_policy(async_sink_mt::overflow_policy::discard_new);
+    for (size_t i = 0; i < messages; i++) {
+        logger->info("Hello message");
+    }
+    REQUIRE(test_sink->msg_counter() < messages);
+    REQUIRE(async_sink->get_discard_counter() > 0);
+}
+
+
+TEST_CASE("flush", "[async]") {
+    auto test_sink = std::make_shared<test_sink_st>();
+    size_t queue_size = 256;
+    size_t messages = 256;
+    {
+        auto [logger, async_sink] = creat_async_logger(queue_size, test_sink);
+        for (size_t i = 0; i < messages; i++) {
+            logger->info("Hello message #{}", i);
+        }
+
+        logger->flush();
+    }
+    // std::this_thread::sleep_for(std::chrono::milliseconds(250));
+    REQUIRE(test_sink->msg_counter() == messages);
+    REQUIRE(test_sink->flush_counter() == 1);
+}
+
+TEST_CASE("wait_dtor ", "[async]") {
+    auto test_sink = std::make_shared<spdlog::sinks::test_sink_mt>();
+    test_sink->set_delay(std::chrono::milliseconds(5));
+    size_t messages = 100;
+    {
+        auto [logger, async_sink] = creat_async_logger(messages, test_sink);
+        async_sink->set_overflow_policy(async_sink_mt::overflow_policy::block);
+
+        for (size_t i = 0; i < messages; i++) {
+            logger->info("Hello message #{}", i);
+        }
+        logger->flush();
+        REQUIRE(async_sink->get_overrun_counter() == 0);
+        REQUIRE(async_sink->get_discard_counter() == 0);
+    }
+
+    REQUIRE(test_sink->msg_counter() == messages);
+    REQUIRE(test_sink->flush_counter() == 1);
+
+}
+
+TEST_CASE("multi threads", "[async]") {
+    auto test_sink = std::make_shared<spdlog::sinks::test_sink_mt>();
+    size_t queue_size = 128;
+    size_t messages = 256;
+    size_t n_threads = 10;
+    {
+        auto [logger, async_sink] = creat_async_logger(queue_size, test_sink);
+
+        std::vector<std::thread> threads;
+        for (size_t i = 0; i < n_threads; i++) {
+            threads.emplace_back([logger, messages] {
+                for (size_t j = 0; j < messages; j++) {
+                    logger->info("Hello message #{}", j);
+                }
+            });
+            logger->flush();
+        }
+
+        for (auto &t : threads) {
+            t.join();
+        }
+    }
+
+    REQUIRE(test_sink->msg_counter() == messages * n_threads);
+    REQUIRE(test_sink->flush_counter() == n_threads);
+}
+
+TEST_CASE("to_file", "[async]") {
+    prepare_logdir();
+    size_t messages = 1024;
+    {
+        spdlog::filename_t filename = SPDLOG_FILENAME_T(TEST_FILENAME);
+        auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(filename, true);
+        auto [logger, async_sink] = creat_async_logger(messages, file_sink);
+
+        for (size_t j = 0; j < messages; j++) {
+            logger->info("Hello message #{}", j);
+        }
+    }
+    require_message_count(TEST_FILENAME, messages);
+    auto contents = file_contents(TEST_FILENAME);
+    using spdlog::details::os::default_eol;
+    REQUIRE(ends_with(contents, spdlog::fmt_lib::format("Hello message #1023{}", default_eol)));
+}
+
+TEST_CASE("bad_ctor", "[async]") {
+    REQUIRE_THROWS_AS(std::make_shared<async_sink_mt>(0), spdlog::spdlog_ex);
+}
+
+TEST_CASE("bad_ctor2", "[async]") {
+    REQUIRE_THROWS_AS(std::make_shared<async_sink_mt>(-1), spdlog::spdlog_ex);
+}
+
+TEST_CASE("start_stop_clbks", "[async]") {
+    bool start_called = false;
+    bool stop_called = false;
+    {
+        auto sink = std::make_shared<async_sink_mt>([&] { start_called = true; }, [&] { stop_called = true; });
+    }
+    REQUIRE(start_called);
+    REQUIRE(stop_called);
+}
+
+TEST_CASE("start_stop_clbks2", "[async]") {
+    bool start_called = false;
+    bool stop_called = false;
+    {
+        auto sink = std::make_shared<async_sink_mt>([&] { start_called = true; }, nullptr);
+    }
+    REQUIRE(start_called);
+    REQUIRE_FALSE(stop_called);
+}
+
+TEST_CASE("start_stop_clbks3", "[async]") {
+    bool start_called = false;
+    bool stop_called = false;
+    {
+        auto sink = std::make_shared<async_sink_mt>(nullptr, [&] { stop_called = true; });
+    }
+    REQUIRE_FALSE(start_called);
+    REQUIRE(stop_called);
+}
+
+TEST_CASE("start_stop_clbks4", "[async]") {
+    bool start_called = false;
+    bool stop_called = false;
+    {
+        auto sink = std::make_shared<async_sink_mt>(128, [&]{ start_called = true; }, [&]{ stop_called = true; });
+    }
+    REQUIRE(start_called);
+    REQUIRE(stop_called);
+}
+
+TEST_CASE("start_stop_clbks5", "[async]") {
+    bool start_called = false;
+    bool stop_called = false;
+    {
+        REQUIRE_THROWS(std::make_shared<async_sink_mt>(0, [&]{ start_called = true; }, [&]{ stop_called = true; }));
+    }
+    REQUIRE_FALSE(start_called);
+    REQUIRE_FALSE(stop_called);
+}
