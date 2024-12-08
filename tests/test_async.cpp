@@ -19,9 +19,9 @@ auto creat_async_logger(size_t queue_size, std::shared_ptr<sink> backend_sink) {
 }
 
 TEST_CASE("basic async test ", "[async]") {
-    auto test_sink = std::make_shared<test_sink_st>();
+    const auto test_sink = std::make_shared<test_sink_st>();
     size_t overrun_counter = 0;
-    size_t queue_size = 16;
+    const size_t queue_size = 16;
     size_t messages = 256;
     {
         auto [logger, async_sink] = creat_async_logger(queue_size, test_sink);
@@ -50,6 +50,8 @@ TEST_CASE("discard policy ", "[async]") {
     }
     REQUIRE(test_sink->msg_counter() < messages);
     REQUIRE(async_sink->get_overrun_counter() > 0);
+    async_sink->reset_overrun_counter();
+    REQUIRE(async_sink->get_overrun_counter() == 0);
 }
 
 TEST_CASE("discard policy discard_new ", "[async]") {
@@ -65,6 +67,8 @@ TEST_CASE("discard policy discard_new ", "[async]") {
     }
     REQUIRE(test_sink->msg_counter() < messages);
     REQUIRE(async_sink->get_discard_counter() > 0);
+    async_sink->reset_discard_counter();
+    REQUIRE(async_sink->get_discard_counter() == 0);
 }
 
 
