@@ -208,3 +208,36 @@ TEST_CASE("start_stop_clbks5", "[async]") {
     REQUIRE_FALSE(start_called);
     REQUIRE_FALSE(stop_called);
 }
+
+
+TEST_CASE("mutli-sinks", "[async]") {
+    prepare_logdir();
+    auto test_sink1 = std::make_shared<spdlog::sinks::test_sink_mt>();
+    auto test_sink2 = std::make_shared<spdlog::sinks::test_sink_mt>();
+    auto test_sink3 = std::make_shared<spdlog::sinks::test_sink_mt>();
+    size_t messages = 1024;
+    {
+        auto [logger, async_sink] = creat_async_logger(messages, test_sink1);
+        async_sink->add_sink(test_sink2);
+        async_sink->add_sink(test_sink3);
+
+
+        for (size_t j = 0; j < messages; j++) {
+            logger->info("Hello message #{}", j);
+        }
+    }
+    REQUIRE(test_sink1->msg_counter() == messages);
+    REQUIRE(test_sink2->msg_counter() == messages);
+    REQUIRE(test_sink3->msg_counter() == messages);
+}
+
+TEST_CASE("no-sinks", "[async]") {
+    auto async_sink = std::make_shared<async_sink_mt>();
+    auto logger = std::make_shared<spdlog::logger>("async_logger", async_sink);
+    for (int i = 1; i < 101; ++i) {
+        logger->info("Async message #{}", i);
+    }
+    auto test_sink = std::make_shared<test_sink_st>();
+    async_sink->add_sink(test_sink);
+    REQUIRE(test_sink->msg_counter() == 0);
+}
