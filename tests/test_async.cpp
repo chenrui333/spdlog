@@ -45,6 +45,9 @@ TEST_CASE("discard policy ", "[async]") {
 
     auto [logger, async_sink] = creat_async_logger(queue_size, test_sink);
     async_sink->set_overflow_policy(async_sink_mt::overflow_policy::overrun_oldest);
+    REQUIRE(async_sink->get_overflow_policy() == async_sink_mt::overflow_policy::overrun_oldest);
+    REQUIRE(async_sink->get_discard_counter()==0);
+    REQUIRE(async_sink->get_overrun_counter()==0);
     for (size_t i = 0; i < messages; i++) {
         logger->info("Hello message");
     }
@@ -55,13 +58,16 @@ TEST_CASE("discard policy ", "[async]") {
 }
 
 TEST_CASE("discard policy discard_new ", "[async]") {
-    auto test_sink = std::make_shared<spdlog::sinks::test_sink_st>();
+    auto test_sink = std::make_shared<test_sink_st>();
     test_sink->set_delay(std::chrono::milliseconds(1));
     size_t queue_size = 4;
     size_t messages = 1024;
 
     auto [logger, async_sink] = creat_async_logger(queue_size, test_sink);
     async_sink->set_overflow_policy(async_sink_mt::overflow_policy::discard_new);
+    REQUIRE(async_sink->get_overflow_policy() == async_sink_mt::overflow_policy::discard_new);
+    REQUIRE(async_sink->get_discard_counter()==0);
+    REQUIRE(async_sink->get_overrun_counter()==0);
     for (size_t i = 0; i < messages; i++) {
         logger->info("Hello message");
     }
