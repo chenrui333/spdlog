@@ -113,11 +113,12 @@ TEST_CASE("multi threads", "[async]") {
     size_t n_threads = 10;
     {
         auto [logger, async_sink] = creat_async_logger(queue_size, test_sink);
+
         std::vector<std::thread> threads;
         for (size_t i = 0; i < n_threads; i++) {
-            threads.emplace_back([&] {
-                for (size_t j = 0; j < messages; j++) {
-                    logger->info("Hello message #{}", j);
+            threads.emplace_back([l=logger, msgs = messages] {
+                for (size_t j = 0; j < msgs; j++) {
+                    l->info("Hello message #{}", j);
                 }
             });
             logger->flush();
